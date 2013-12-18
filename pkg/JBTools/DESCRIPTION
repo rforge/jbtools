@@ -1,0 +1,11 @@
+Package: JBTools
+Title:   Collection tools for R
+Version: 0.7.0.1
+Date: 2011-02-15
+Author: Jannis v. Buttlar
+Maintainer: Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>
+Description: Collection of tools and functions used by other packages.
+Imports: foreach, parallel, gplots, colorspace, plotrix
+License: GPL-2
+LazyLoad: yes
+Depends: R (>= 1.10.0)

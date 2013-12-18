@@ -1,0 +1,12 @@
+exportPattern("^[^\\.]")	#exports all variables that do not start with a period.
+
+#import(aNamespace)	# only required when extending S3 methods 
+
+#useDynLib(ProjectsDllBaseName)	# only required when supplying C or FORTRAN code 
+
+importFrom(foreach, getDoParWorkers)
+importFrom(parallel, makeCluster)
+importFrom(gplots, col2hex)
+importFrom(colorspace, hex, hex2RGB, mixcolor)
+importFrom(plotrix, color.legend)
+import(doMC)
