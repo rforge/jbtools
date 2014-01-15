@@ -4,7 +4,8 @@
 \description{Wrapper function around color.legend to ease its usage.}
 \usage{plotColorScale(col, zlim = c(), pos = list(x = c(1.02, 1.08), 
     y = c(0.1, 0.9)), align = "rb", gradient = "y", cex = 1, 
-    cex.title = 1, title = "cts/px", outer.range = c(FALSE, FALSE))}
+    cex.title = 1, title = "cts/px", outer.range = c(FALSE, FALSE), 
+    legend = c())}
 \arguments{
   \item{col}{vector of color strings defining the palette to use}
   \item{zlim}{numeric vector (of length 2) defining the upper and lower limit
@@ -19,6 +20,8 @@ of the values mapped to the color scale.}
   \item{title}{character: the title of the color scale}
   \item{outer.range}{logical: whether to extend the scale over the zlim borders
 at its bottom and top.}
+  \item{legend}{
+}
 }
 
 

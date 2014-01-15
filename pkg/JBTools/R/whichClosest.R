@@ -1,8 +1,11 @@
 whichClosest=function(
+  ##title<< find closest matches in two vectors
    x         ##<< numeric vector: values that should be found in x.match
    ,x.match  ##<< numeric vector: values the values of x should be matcheed against
-  , arr.ind = FALSE
+  , arr.ind = FALSE ##logical: whether to return matrix indices or not. 
 )
+  ##description<< Function to find closest matches of vector A in vector B and return
+  ##              the respective indices.
 {
   match.ind <- array(0, dim=c(length(x), if(arr.ind){2} else {1}))
   
