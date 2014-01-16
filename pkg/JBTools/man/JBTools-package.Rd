@@ -12,7 +12,7 @@ the author will try to fix them, time permitting.}
 \details{
 \tabular{ll}{Package: \tab JBTools\cr
 Title: \tab Collection of miscellaneous tools and helpers for R.\cr
-Version: \tab 0.7.0.1\cr
+Version: \tab 0.7.1.2\cr
 Date: \tab 2011-02-15\cr
 Author: \tab Jannis v. Buttlar\cr
 Maintainer: \tab Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>\cr
