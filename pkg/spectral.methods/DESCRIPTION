@@ -5,7 +5,13 @@ Date: 2013-08-15
 Author: Jannis v. Buttlar
 Maintainer: Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>
 Imports: Rssa, raster, nnet, abind, RNetCDF, ncdf.tools, foreach, doMC, JBTools, snow, snowfall, DistributionUtils, RColorBrewer 
-Description: The package contains some implementations of SSA for the gap filling (GapfillSSA() ) and spectral decomposition (FilterTseriesSSA() ) of time series. It uses the SSA algorithm developed by Korobeneykov (2009) and implemented in Rssa which has to be downloaded from Cran or http://github.com/asl/rssa. 
+Description: This package contains some implementations of SSA for the gap filling (gapfillSSA() ) 
+ and spectral decomposition (filterTseriesSSA() ) of time series. It uses the SSA algorithm 
+ developed by Korobeneykov (2009) and implemented in Rssa which has to be downloaded from Cran or 
+ http://github.com/asl/rssa. All code is under constant development and errors or bugs sometimes occour 
+ when the functions are used in new contexts and scenarios which have not yet been tested. 
+ Please report all such errors to the mailing lists on R-Forge and the author will try to fix them, 
+ time permitting.
 License: GPL-2
 LazyLoad: yes
 Depends: R (>= 2.10.0)

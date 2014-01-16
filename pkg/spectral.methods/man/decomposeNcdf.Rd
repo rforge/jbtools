@@ -6,10 +6,9 @@ to another ncdf file using SSA.
 }
 \usage{decomposeNcdf(file.name, borders.wl, calc.parallel = TRUE, center.series = TRUE, 
     check.files = TRUE, debugging = FALSE, harmonics = c(), M = c(), 
-    max.cores = 16, n.comp = c(), package.parallel = "doMC", 
-    pad.series = c(0, 0), print.status = TRUE, ratio.const = 0.05, 
-    repeat.extr = rep(1, times = length(borders.wl)), tresh.const = 1e-12, 
-    var.names = "auto", ...)}
+    max.cores = 16, n.comp = c(), pad.series = c(0, 0), print.status = TRUE, 
+    ratio.const = 0.05, repeat.extr = rep(1, times = length(borders.wl)), 
+    tresh.const = 1e-12, var.names = "auto", ...)}
 \arguments{
   \item{file.name}{character: name of the ncdf file to decompose. The file has to be in the current working directory!}
   \item{borders.wl}{list: borders of the different periodicity bands to extract. Units are
@@ -26,9 +25,6 @@ documentation of filterTSeriesSSA!}
 for each element in borders.wl): see the documentation of filterTSeriesSSA.}
   \item{max.cores}{integer: maximum number of cores to use.}
   \item{n.comp}{SSA calculation parameter: see the documentation of filterTSeriesSSA!}
-  \item{package.parallel}{character: package to use for linking foreach to
-the parallel computing back end. Only doMC as the algorithm has been
-extensively tested with this package.!}
   \item{pad.series}{SSA calculation parameter: see the documentation of filterTSeriesSSA!}
   \item{print.status}{logical: whether to print status information during the process}
   \item{ratio.const}{numeric: max ratio of the time series that is allowed to be above tresh.const for the time series

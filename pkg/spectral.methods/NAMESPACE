@@ -1,28 +1,21 @@
-exportPattern("^[^\\.]")	#exports all variables that do not start with a period.
-
-#import(aNamespace)	# only required when extending S3 methods 
-
-#useDynLib(ProjectsDllBaseName)	# only required when supplying C or FORTRAN code
-
-
+exportPattern("^[^\\.]")
 importFrom(Rssa, ssa, reconstruct, clusterify, decompose)
 importFrom(RNetCDF,  open.nc, var.get.nc, close.nc)
 importFrom(abind, abind)
 importFrom(raster, raster, focal)
 importFrom(nnet, which.is.max)
 importFrom(ncdf.tools, checkNcdfFile, convertDateNcdf2R, indexDatacube, infoNcdfAtts,
-                       infoNcdfDims, infoNcdfVars, modifyNcdfCopyAtts, modifyNcdfCopyMetadata, 
-                       readNcdfVarName, transNcdfRotate)
-importFrom(RNetCDF, att.get.nc, att.put.nc, create.nc, dim.def.nc, dim.inq.nc, sync.nc, var.def.nc,
-                    var.inq.nc, var.put.nc)
+           infoNcdfDims, infoNcdfVars, modifyNcdfCopyAtts, modifyNcdfCopyMetadata, 
+           readNcdfVarName, transNcdfRotate)
+importFrom(RNetCDF, att.get.nc, att.put.nc, create.nc, dim.def.nc, dim.inq.nc, sync.nc,
+           var.def.nc, var.inq.nc, var.put.nc)
 importFrom(JBTools, convertArgs2String, getCoreLimit, getSysinfo, getVecInfo,
-           indexVec2Array, isSeriesConstant, isSeriesContinuous, labelMargins, MEF, plotImageRotated,
-           plotBG, printStatus, rangeZeroEqui, registerParallel,
+           indexVec2Matrix, isSeriesConstant, isSeriesContinuous, labelMargins, MEF, 
+           plotImageRotated, plotBG, printStatus, rangeZeroEqui, registerParallel,
            RMSE, userCoords, whichClosest)
 import(foreach)
+importFrom(DistributionUtils, logHist)
+importFrom(RColorBrewer, brewer.pal)
 import(doMC)
 import(snowfall)
 import(snow)
-importFrom(DistributionUtils, logHist)
-importFrom(RColorBrewer, brewer.pal)
-

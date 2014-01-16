@@ -3,10 +3,10 @@
 \title{create empty lat/lon/time ncdf file}
 \description{this function creates an empty standardized latitude/longitude/time ncdf file.}
 \usage{createLatLongTime(file.name, var.names = sub("[.]nc", "", file.name), 
-    lat.values = c(), long.values = c(), time.values = c(), lat.length = length(lat.values), 
-    long.length = length(long.values), time.length = length(time.values), 
-    scale_factor = 1, add_offset = 0, type.var = "NC_DOUBLE", 
-    missing_value = -9999, units = "[]")}
+    lat.values = c(), long.values = c(), time.values = c(), add.dims = list(), 
+    lat.length = length(lat.values), long.length = length(long.values), 
+    time.length = length(time.values), scale_factor = 1, add_offset = 0, 
+    type.var = "NC_DOUBLE", missing_value = -9999, units = "[]")}
 \arguments{
   \item{file.name}{character string: name of the target file.}
   \item{var.names}{character vector: names of the variables
@@ -16,6 +16,8 @@ positions.}
   \item{long.values}{numeric values: coordinate values for the latitude
 positions.}
   \item{time.values}{POSIXct vector: time values for the time dimension}
+  \item{add.dims}{
+}
   \item{lat.length}{integer: length of the latitude dimension}
   \item{long.length}{integer: length of the longitude dimension}
   \item{time.length}{integer: length of the time dimension}

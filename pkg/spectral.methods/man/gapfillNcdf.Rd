@@ -14,7 +14,7 @@ to another ncdf file.}
     MSSA = rep(list(rep(list(FALSE), times = length(dimensions[[1]]))), 
         times = length(dimensions)), MSSA.blck.trsh = tresh.fill[[1]][[1]], 
     MSSA.blocksize = 1, n.comp = lapply(amnt.iters, FUN = function(x) x[[1]][[1]][1] * 
-        2), ocean.mask = c(), package.parallel = "doMC", pad.series = rep(list(rep(list(c(0, 
+        2), ocean.mask = c(), pad.series = rep(list(rep(list(c(0, 
         0)), times = length(dimensions[[1]]))), times = length(dimensions)), 
     print.status = TRUE, process.cells = c("gappy", "all")[1], 
     process.type = c("stepwise", "variances")[1], ratio.const = 0.05, 
@@ -75,8 +75,6 @@ cells will be set to missing after spatial SSA and will be excluded from tempora
 The matrix needs to have dimensions identical in order and size to the spatial dimensions
 in the ncdf file. As an alternative to a R matrix, the name of a ncdf file can be supplied.
 It should only contain one non coordinate variable with 1 at ocean cells and 0 at land cells.}
-  \item{package.parallel}{
-}
   \item{pad.series}{list of integer vectors (of size 2):
 length of the extracts from series to use for
 padding. Only possible in the one dimensional case. See the documentation of gapfillSSA for details!}
@@ -184,6 +182,7 @@ TODO remove first guess stuff
 TODO incorporate non convergence information in final datacube
 TODO facilitate easy run of different settings (e.g. with different default settings)
 TODO switch off "force.all.dims" in case of non necessity
+start parallel processing workers
 insert gaps for cross validation      
 determine different iteration control parameters
 prepare parallel iteration parameters
