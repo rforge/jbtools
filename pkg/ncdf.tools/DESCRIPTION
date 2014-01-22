@@ -4,9 +4,7 @@ Version: 0.7.0.283
 Date: 2011-02-15
 Author: Jannis v. Buttlar
 Maintainer: Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>
-Imports: RNetCDF, chron, foreach, iterators, codetools, multicore, doMC,
-         DistributionUtils, abind, plotrix, snow, snowfall, raster, RColorBrewer, plyr, 
-         Rssa, JBTools, doSNOW
+Imports: RNetCDF, chron, foreach, doMC, abind, plotrix, snow, snowfall, raster, RColorBrewer, JBTools
 Description: Set of tools to simplify the handling of ncdf files with the RNetCDF package. 
  Most functions are wrappers for basic functions from RNetCDF to run combinations of these 
  functions for frequently encountered tasks. A few functions included are very specific

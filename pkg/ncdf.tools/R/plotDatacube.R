@@ -143,7 +143,7 @@ plotDatacube <- function(
     ## plot maps
     z.range     <- range(cube.info[, , , fourth.dim.t],na.rm = TRUE, finite = TRUE)
     if (length(fourth.dim) > 1 & names(dev.cur()) == 'null device' )
-      x11()        
+      dev.new()        
     layout(matrix(c(2,4,6,8,10,12,1,3,5,7,9,11,13,13,13,13,13,13),byrow=TRUE,ncol=6),
         heights=c(0.1,1,1))
     par(tcl = 0.2, mgp = c(1, 0, 0), mar = c(2, 0, 0, 1), oma = c(0, 2, 4, 1))
