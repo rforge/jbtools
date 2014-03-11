@@ -307,7 +307,7 @@ gapfillSSA <- structure(function(
       series.loopstart <- series.work
 
       if (plot.progress) {                         
-        x11()
+        dev.new()
         yrange <- range(series.work[ind_plot_progress]) + c(-1,1)* diff(range(series.work[ind_plot_progress]))
         plot((1:n.datapts)[ind_plot_progress], series.work[ind_plot_progress],
              col = 'gray', type ='b', ylim = yrange)
@@ -529,7 +529,7 @@ gapfillSSA <- structure(function(
   results$perf.big.gaps = perf.big.gaps
   results$reconstr = recstr
   results$recstr_diffsum = recstr_diffsum                    
-  results$variances = (results.ssa[['ssa.res']]$lambda[1:n.comp] / sum(results.ssa[['ssa.res']]$lambda[1:n.comp]))
+  results$variances = (results.ssa[['ssa.res']]$sigma[1:n.comp] / sum(results.ssa[['ssa.res']]$sigma[1:n.comp]))
 
   ## plot cross validation performance
   if (plot.results)
@@ -910,18 +910,18 @@ gapfillSSA <- structure(function(
     ## try grouping
     if (!(class(ssa.res)[1] == 'try-error')) {                                        ## if ssa converged
       if (run.grouping) {                                                             ## if group eigentriples
-        if (length(which(ssa.res$lambda > 0)) > 2) {                                  ## if enough eigentriples
+        if (length(which(ssa.res$sigma > 0)) > 2) {                                  ## if enough eigentriples
           ssa.groups.t   <- try({
-            do.call(GroupEigTrpls, list(x = ssa.res, group = which(ssa.res$lambda[1:n.comp] > 0)))
+            do.call(GroupEigTrpls, list(x = ssa.res, group = which(ssa.res$sigma[1:n.comp] > 0)))
           }, silent = TRUE)
           if (class(ssa.groups.t)[1] == 'try-error')                                  ## if grouping failed
             group.triples <- 'single' 
-        } else if (!(length(which(ssa.res$lambda > 0)) > 2)) {                        ## if not enough eigentriples
+        } else if (!(length(which(ssa.res$sigma > 0)) > 2)) {                        ## if not enough eigentriples
           group.triples  <- 'single'
         }  
         ssa.groups.local <- ssa.groups.t
       } else if (!(run.grouping)) {                                                   ## if do not group eigentriples
-        ssa.groups.local <- try({sapply(ssa.groups.t, function(x)x[!is.element(x, which(ssa.res$lambda == 0)) & x <= length(ssa.res$lambda)], simplify = F)}, silent = TRUE)
+        ssa.groups.local <- try({sapply(ssa.groups.t, function(x)x[!is.element(x, which(ssa.res$sigma == 0)) & x <= length(ssa.res$sigma)], simplify = F)}, silent = TRUE)
       }
       options(old.opt)
       if (group.triples == 'single') {                                                ## if grouping failed
@@ -934,7 +934,7 @@ gapfillSSA <- structure(function(
                 file = paste('grouping_error_', as.numeric(Sys.time()),'.RData', sep = ''))
           }          
         }
-        ssa.groups.t     <- as.list(1:n.comp)[which(ssa.res$lambda != 0)]
+        ssa.groups.t     <- as.list(1:n.comp)[which(ssa.res$sigma != 0)]
         ssa.groups.local <- ssa.groups.t
         error            <- TRUE
       }

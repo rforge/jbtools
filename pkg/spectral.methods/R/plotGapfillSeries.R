@@ -34,7 +34,7 @@ plotGapfillSeries <- function(
   for (var.t in vars.filled) {
     
     if(interactive() && names(dev.cur()) == 'X11')
-      x11()
+      dev.new()
     layout(matrix(c(1,2,3,3,4,5,6,7,8,9), byrow=TRUE, ncol=2),
            heights = c(1, 1))
     

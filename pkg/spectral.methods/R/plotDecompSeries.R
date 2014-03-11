@@ -40,7 +40,7 @@ plotDecompSeries <- function(
     printStatus(paste('Plotting variable ', var.t, sep = ''))
     n.plots = 5
     if (interactive() && is.element(names(dev.cur()), c('X11', 'null device')) && nchar(file.plot) == 0) {
-      x11()
+      dev.new()
     } else if ( nchar(file.plot) > 0) {
       png(filename = paste(file.plot, '_', var.t, '.png', sep = ''), width = 3200, height = 1600, type = 'cairo',
           pointsize = 48)

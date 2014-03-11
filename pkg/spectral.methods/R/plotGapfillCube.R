@@ -105,7 +105,7 @@ plotGapfillCube <- function(
   
   ## plot maps
   if(names(dev.cur()) == 'X11')
-    x11()
+    dev.new()
   layout(matrix(c(1:9),byrow=TRUE,ncol=3),
          heights=c(1,1,1,1))
   par(tcl = 0.2, mgp = c(1, 0, 0), mar = c(2, 0, 0, 2), oma = c(0, 2, 4, 0))
@@ -136,7 +136,7 @@ plotGapfillCube <- function(
   labelMargins(c('orig', 'filled', 'orig - filled'), side = 3, outer = TRUE, cex = 2, line =0.5)
   
   if(names(dev.cur()) == 'X11')
-    x11()
+    dev.new()
   layout(matrix(c(1:2),byrow=TRUE,ncol=1),
          heights=c(1,1))
   par(tcl = 0.2, mgp = c(1, 0, 0), mar = c(2, 0, 0, 2), oma = c(0, 2, 4, 0), xpd = FALSE)
@@ -190,7 +190,7 @@ plotGapfillCube <- function(
       ind.plot     <- indexVec2Matrix(ind.sorted[c(1:floor(n.series/2), (length(ind.sorted) - floor(n.series/2)):length(ind.sorted) )], dim = dim(cube.info.orig)[-1] )
     }
     if(names(dev.cur()) == 'X11')
-      x11()
+      dev.new()
     layout(matrix(1:n.series, n.series, 1))
     par(tcl = 0.2, mgp = c(1, 0, 0), mar = c(0, 0, 0, 0), oma = c(2, 2, 2, 2))
     args.extract =  c(list(data.filled), list(TRUE, TRUE, TRUE))

@@ -101,7 +101,7 @@ decomposeNcdf = structure(function(
                            c(SSAprocess = 'Decompose', args.call.filecheck))
   file.con.orig <- res.check$file.con.orig    
   if (length(var.names) == 1 && var.names == 'auto') 
-    var.names   <- readNcdfVarName(file.con.orig)
+    var.names   <- readNcdfVarName(file.name)
   
   ## open ncdf files
   if (print.status)
@@ -109,7 +109,7 @@ decomposeNcdf = structure(function(
   file.name.copy  <- paste(sub('.nc$','',file.name), '_specdecomp.nc', sep='')
   file.con.copy   <- create.nc(file.name.copy)
   Sys.chmod(file.name.copy, mode = "0777")
-  
+
   ## set default parameters
   if (!calc.parallel)
     max.cores                   <- 1
@@ -266,14 +266,24 @@ decomposeNcdf = structure(function(
     aperm.array                                <- c(order(c(dims.cycle.id, dims.process.id)), length(c(dims.cycle.id, dims.process.id)) + 1)
     data.results.final                         <- aperm(data.results.final, aperm.array)
 
-    ## save results
-    if(sum(is.infinite(data.results.final)) > 0)
-      save.image(paste('workspace_before_writing_', file.name, '.RData', sep = ''))
     if (print.status)
       cat(paste(Sys.time(), ' : Writing results to file. \n', sep=''))
-    if (!is.element('missing_value', infoNcdfAtts(file.con.copy, var.name)[,'name']) &&
-        sum(is.na(data.results.final)) > 0)
-      att.put.nc(file.con.copy, var.name, 'missing_value', var.inq.nc(file.con.copy, var.name)$type, -9999.0)
+
+    ## add missing value attribute
+    if (sum(is.na(data.results.final)) > 0) {
+      att.missing <- c('missing_value',  '_FillValue')[is.na(match(c('missing_value',  '_FillValue'), infoNcdfAtts(file.con.copy, var.name)[,'name']))]
+      for (att.add in att.missing) {
+        other.att <-  c('missing_value',  '_FillValue')[ - match(att.add, c('missing_value',  '_FillValue'))]
+        if (is.element(other.att, infoNcdfAtts(file.con.copy, var.name)[,'name'])) {
+          value.use <- att.get.nc(file.con.copy,  var.name,  other.att)
+        } else {
+          value.use <- -9999.0
+        }
+        att.put.nc(file.con.copy, var.name, att.add, var.inq.nc(file.con.copy, var.name)$type, value.use )
+      }
+    }
+
+    ## save results
     if (drop.dim)
       data.results.final <- drop(data.results.final)
     var.put.nc(file.con.copy, var.name, data.results.final)

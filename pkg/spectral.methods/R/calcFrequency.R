@@ -23,7 +23,7 @@ calcFrequency = function(
 
     if(plot.periodogram)
     {
-        x11()
+        dev.new()
         plot(frequencies, periodogram, log='xy')
         abline(v = frequency.main, col = 'red', lty = 2)
         text(frequency.main, 10 ^ par()$usr[4], round(1 / frequency.main, digits = 2), col = 'red',adj = c(0, 1))

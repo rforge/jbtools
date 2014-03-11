@@ -1161,7 +1161,7 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
   if (SSAprocess == 'Decompose' ) {
     n.bands                       <- length(unlist(args$borders.wl))-length(args$borders.wl)
     if(file.info(args$file.name)$size / 1024^3 * n.bands >  2)
-      stop('Target file size may exceed 2GB. Reduce n.bands or Compress or split input ncdf file!')
+      stop('Target file size may exceed 2GB. Reduce n.bands or compress or split input ncdf file!')
     if (is.null(args$borders.wl))
       stop('Argument borders.wl needs to be supplied!')
     if (!class(args$borders.wl) == 'list')
