@@ -21,9 +21,9 @@ to another ncdf file.}
     ratio.test = 1, reproducible = FALSE, size.biggap = rep(list(rep(list(20), 
         times = length(dimensions[[1]]))), times = length(dimensions)), 
     tresh.const = 1e-12, tresh.converged = 0, tresh.fill = c(list(list(0.1)), 
-        rep(list(list(0, 0)), length(dimensions) - 1)), tresh.fill.first = list(tresh.fill[[1]]), 
-    var.names = "auto", ...)}
-\arguments{
+        rep(list(list(0,
+ 0)), length(dimensions) - 1)), tresh.fill.first = list(tresh.fill[[1]]), 
+    var.names = "auto", ...)}\arguments{
   \item{amnt.artgaps}{list of numeric vectors:
 The relative ratio (length gaps/series length) of
 artificial gaps to include in the "innermost" SSA loop (e.g. the value used by the
@@ -246,14 +246,15 @@ delete first guess files}
 #                M = M, process.type = process.type)
     
     ##example settings for 4 steps, stepwise and alternating between temporal and spatial
-    dimensions       = list(list('time'), list(c('longitude','latitude')), list('time'), list(c('longitude','latitude')))
-    amnt.iters       = list(list(c(1,5)), list(c(1,5)),                    list(c(2,5)), list(c(2,5)))
-    amnt.iters.start = list(list(c(1,1)), list(c(1,1)),                    list(c(2,1)), list(c(2,1)))
-    amnt.artgaps     = list(list(c(0,0)), list(c(0,0)),                    list(c(0,0)), list(c(0,0)))
-    size.biggap      = list(list(0),      list(0),                         list(0),      list(0))
-    n.comp           = list(list(15),     list(15),                        list(15),     list(15))
-    tresh.fill       = list(list(.2),     list(0),                         list(0),     list(0))
-    M                = list(list(23),     list(c(20,20)),                  list(23),     list(c(20,20)))
+    dimensions       = list(list('time'), list(c('longitude','latitude')),
+      list('time'), list(c('longitude','latitude')))
+    amnt.iters       = list(list(c(1,5)), list(c(1,5)), list(c(2,5)), list(c(2,5)))
+    amnt.iters.start = list(list(c(1,1)), list(c(1,1)), list(c(2,1)), list(c(2,1)))
+    amnt.artgaps     = list(list(c(0,0)), list(c(0,0)), list(c(0,0)), list(c(0,0)))
+    size.biggap      = list(list(0),      list(0), list(0),      list(0))
+    n.comp           = list(list(15),     list(15), list(15),     list(15))
+    tresh.fill       = list(list(.2),     list(0), list(0),     list(0))
+    M                = list(list(23),     list(c(20,20)), list(23), list(c(20,20)))
     process.type     = 'stepwise'
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, 
 #                amnt.iters = amnt.iters, amnt.iters.start = amnt.iters.start, 

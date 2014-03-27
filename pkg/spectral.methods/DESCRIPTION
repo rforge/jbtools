@@ -1,17 +1,11 @@
 Package: spectral.methods
-Title: Collection of SSA tools for spectral analysis
-Version: 0.7.1.120
-Date: 2013-08-15
+Title: Singular Spectrum Analysis (SSA) tools for time series analysis
+Version: 0.7.2.121
+Date: 2014-01-01
 Author: Jannis v. Buttlar
 Maintainer: Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>
-Imports: Rssa, raster, nnet, abind, RNetCDF, ncdf.tools, foreach, doMC, JBTools, snow, snowfall, DistributionUtils, RColorBrewer 
-Description: This package contains some implementations of SSA for the gap filling (gapfillSSA() ) 
- and spectral decomposition (filterTseriesSSA() ) of time series. It uses the SSA algorithm 
- developed by Korobeneykov (2009) and implemented in Rssa which has to be downloaded from Cran or 
- http://github.com/asl/rssa. All code is under constant development and errors or bugs sometimes occour 
- when the functions are used in new contexts and scenarios which have not yet been tested. 
- Please report all such errors to the mailing lists on R-Forge and the author will try to fix them, 
- time permitting.
+Imports: Rssa, raster, nnet, abind, RNetCDF, ncdf.tools, foreach, doMC, JBTools, parallel, DistributionUtils, RColorBrewer 
+Description: This package contains some implementations of Singular Spectrum Analysis (SSA) for the gapfilling (gapfillSSA() ) and spectral decomposition (filterTseriesSSA() ) of time series. It contains the code used by Buttlar et. al. (2014), Nonlinear Processes in Geophysics (gapfillNcdf). In adittion, the iterative SSA gapfilling of Kondrashov and Ghil (2006) is implemented. All SSA calculations are done via the truncated and fast SSA algorithm of Korobeneykov (2010) (package Rssa). 
 License: GPL-2
 LazyLoad: yes
 Depends: R (>= 2.10.0)

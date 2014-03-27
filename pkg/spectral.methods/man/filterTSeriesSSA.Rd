@@ -10,12 +10,12 @@ Singular Spectrum Analysis (SSA) method of Korobeneykov (2009).}
     grouping = c("clusterify", "nearest_neigh")[1], repeat.extr = rep(1, 
         times = length(borders.wl)), recstr.type = "subtraction", 
     pad.series = c(0, 0), SSA.methods = c("nutrlan", "propack", 
-        "eigen", "svd"), center.series = TRUE, call.freq = quote(calcFrequency(series.t)), 
+        "eigen",
+ "svd"), center.series = TRUE, call.freq = quote(calcFrequency(series.t)), 
     n.steps = switch(class(borders.wl), list = length(borders.wl), 
         dim(borders.wl)[2]), plot.spectra = FALSE, second.axis = TRUE, 
     open.plot = TRUE, print.stat = TRUE, xlim = c(), debugging = FALSE, 
-    ...)}
-\arguments{
+    ...)}\arguments{
   \item{series}{numeric vector: Input time series (no gaps!)}
   \item{borders.wl}{list of numeric vectors: Borders of the different periodicity
 bands to extract. Units are the sampling frequency of the series
@@ -108,11 +108,13 @@ Analysis of time series structure: SSA and related techniques, CRC Press}
 \seealso{\code{\link{ssa}},\code{\link{calcFrequency}}}
 \examples{
 #create series consisting of two oscillations and noise
-series.ex <- sin(2 * pi * 1:10000 / 1000) +  0.7 * sin(2 * pi * 1:10000 / 100)  + rnorm(n = 10000, sd = 0.4)
+series.ex <- sin(2 * pi * 1:10000 / 1000) +  0.7 * sin(2 * pi * 1:10000 / 100)  +
+  rnorm(n = 10000, sd = 0.4)
 
 #prepare graphics
 layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 2))
-par(tcl = 0.2, mgp = c(2, 0, 0), mar = c(0, 4, 0, 0), oma = c(2, 0, 2, 0), ps = 10, cex = 1)
+par(tcl = 0.2, mgp = c(2, 0, 0), mar = c(0, 4, 0, 0), oma = c(2, 0, 2, 0),
+    ps = 10, cex = 1)
 plot.new()
 
 #perform decomposition

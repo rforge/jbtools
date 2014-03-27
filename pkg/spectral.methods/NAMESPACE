@@ -9,13 +9,13 @@ importFrom(ncdf.tools, checkNcdfFile, convertDateNcdf2R, indexDatacube, infoNcdf
            readNcdfVarName, transNcdfRotate)
 importFrom(RNetCDF, att.get.nc, att.put.nc, create.nc, dim.def.nc, dim.inq.nc, sync.nc,
            var.def.nc, var.inq.nc, var.put.nc)
-importFrom(JBTools, convertArgs2String, getCoreLimit, getSysinfo, getVecInfo,
+importFrom(JBTools, convertArgs2String, getSysinfo, getVecInfo,
            indexVec2Matrix, isSeriesConstant, isSeriesContinuous, labelMargins, MEF, 
            plotImageRotated, plotBG, printStatus, rangeZeroEqui, registerParallel,
            RMSE, userCoords, whichClosest)
 import(foreach)
+import(parallel)
 importFrom(DistributionUtils, logHist)
 importFrom(RColorBrewer, brewer.pal)
 import(doMC)
-import(snowfall)
-import(snow)
+

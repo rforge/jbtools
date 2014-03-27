@@ -83,10 +83,8 @@ decomposeNcdf = structure(function(
   ##TODO Add way to handle non convergence
   
   ## prepare parallel back end
-  if (calc.parallel) {
-    library(doMC)
-    registerParallel('doMC', max.cores)
-  }
+  if (calc.parallel) 
+    w <- registerParallel('doMC', max.cores)
   
   ##save argument values of call
   args.call.filecheck <- as.list(environment())

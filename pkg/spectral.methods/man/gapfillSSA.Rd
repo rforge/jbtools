@@ -16,8 +16,7 @@ scheme with artificial gaps is used to determine these periodic components.}
     remove.infinite = FALSE, scale.recstr = TRUE, series, seed = integer(), 
     size.biggap = 20, SSA.methods = c("nutrlan", "propack", "eigen", 
         "svd"), tresh.convergence = 0.01, tresh.min.length = 5, 
-    z.trans.series = TRUE)}
-\arguments{
+    z.trans.series = TRUE)}\arguments{
   \item{amnt.artgaps}{numeric vector: The relative ratio (amount gaps/series length) of
 artificial gaps to include to determine the iteration with the best
 prediction (c(ratio big gaps, ratio small gaps)). If this is set to
@@ -170,7 +169,8 @@ www.adsabs.harvard.edu/abs/2009arXiv0911.4498K}
 \seealso{\code{\link[Rssa]{ssa}}}
 \examples{
 ## create series with gaps
-series.ex <- sin(2 * pi * 1:1000 / 100) +  0.7 * sin(2 * pi * 1:1000 / 10) + rnorm(n = 1000, sd = 0.4)
+series.ex <- sin(2 * pi * 1:1000 / 100) +  0.7 * sin(2 * pi * 1:1000 / 10) +
+  rnorm(n = 1000, sd = 0.4)
 series.ex[sample(c(1:1000), 30)] <- NA
 series.ex[c(seq(from = sample(c(1:1000), 1), length.out = 20),
             seq(from = sample(c(1:1000), 1), length.out = 20))]<-NA
@@ -179,7 +179,8 @@ indices.gaps <- is.na(series.ex)
 ## prepare graphics
 layout(matrix(c(1:5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7), ncol = 5, byrow = TRUE), 
        widths = c(1, 1, 1, 0.1, 0.1))
-par(mar = c(2, 0, 0, 0.2), oma = c(0, 3, 2, 0.2), tcl = 0.2, mgp = c(0, 0, 100), las = 1)
+par(mar = c(2, 0, 0, 0.2), oma = c(0, 3, 2, 0.2), tcl = 0.2, mgp = c(0, 0, 100),
+    las = 1)
 
 ## perform gap filling
 data.filled <- gapfillSSA(series = series.ex, plot.results = TRUE, open.plot = FALSE)

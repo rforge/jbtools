@@ -246,11 +246,8 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
     dims.info     <- infoNcdfDims(file.con.orig)
     
     ## start parallel processing workers
-    if (calc.parallel) {
-      library(doMC)
-      registerParallel('doMC', max.cores)
-    }
-    
+    if (calc.parallel) 
+      w <- registerParallel('doMC', max.cores)
 
     # start loops
     for (var.name in var.names) {
@@ -645,14 +642,15 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 #                M = M, process.type = process.type)
     
     ##example settings for 4 steps, stepwise and alternating between temporal and spatial
-    dimensions       = list(list('time'), list(c('longitude','latitude')), list('time'), list(c('longitude','latitude')))
-    amnt.iters       = list(list(c(1,5)), list(c(1,5)),                    list(c(2,5)), list(c(2,5)))
-    amnt.iters.start = list(list(c(1,1)), list(c(1,1)),                    list(c(2,1)), list(c(2,1)))
-    amnt.artgaps     = list(list(c(0,0)), list(c(0,0)),                    list(c(0,0)), list(c(0,0)))
-    size.biggap      = list(list(0),      list(0),                         list(0),      list(0))
-    n.comp           = list(list(15),     list(15),                        list(15),     list(15))
-    tresh.fill       = list(list(.2),     list(0),                         list(0),     list(0))
-    M                = list(list(23),     list(c(20,20)),                  list(23),     list(c(20,20)))
+    dimensions       = list(list('time'), list(c('longitude','latitude')),
+      list('time'), list(c('longitude','latitude')))
+    amnt.iters       = list(list(c(1,5)), list(c(1,5)), list(c(2,5)), list(c(2,5)))
+    amnt.iters.start = list(list(c(1,1)), list(c(1,1)), list(c(2,1)), list(c(2,1)))
+    amnt.artgaps     = list(list(c(0,0)), list(c(0,0)), list(c(0,0)), list(c(0,0)))
+    size.biggap      = list(list(0),      list(0), list(0),      list(0))
+    n.comp           = list(list(15),     list(15), list(15),     list(15))
+    tresh.fill       = list(list(.2),     list(0), list(0),     list(0))
+    M                = list(list(23),     list(c(20,20)), list(23), list(c(20,20)))
     process.type     = 'stepwise'
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, 
 #                amnt.iters = amnt.iters, amnt.iters.start = amnt.iters.start, 

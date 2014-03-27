@@ -485,11 +485,13 @@ series                      ##<< numeric vector: Input time series (no gaps!)
   )
 }, ex = function(){
   #create series consisting of two oscillations and noise
-  series.ex <- sin(2 * pi * 1:10000 / 1000) +  0.7 * sin(2 * pi * 1:10000 / 100)  + rnorm(n = 10000, sd = 0.4)
+  series.ex <- sin(2 * pi * 1:10000 / 1000) +  0.7 * sin(2 * pi * 1:10000 / 100)  +
+    rnorm(n = 10000, sd = 0.4)
 
   #prepare graphics
   layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 2))
-  par(tcl = 0.2, mgp = c(2, 0, 0), mar = c(0, 4, 0, 0), oma = c(2, 0, 2, 0), ps = 10, cex = 1)
+  par(tcl = 0.2, mgp = c(2, 0, 0), mar = c(0, 4, 0, 0), oma = c(2, 0, 2, 0),
+      ps = 10, cex = 1)
   plot.new()
 
   #perform decomposition

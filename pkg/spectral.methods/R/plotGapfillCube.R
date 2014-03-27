@@ -20,8 +20,8 @@ plotGapfillCube <- function(
   ##TODO include plotNLines capabilites
   
   ## preparation
-  setDefaultClusterOptions(port = sample(49152:65535, 1))
-  sfInit(cpus = min(c(getCoreLimit(), max.cores)), type = 'SOCK', parallel = TRUE)    
+  Sys.setenv(R_PARALLEL_PORT =  sample(49152:65535, 1))
+  cl <- makeCluster(cpus = min(c(detectCores(), max.cores)), type = 'SOCK')    
   con.orig   <- open.nc(file.orig)
   con.filled <- open.nc(file.filled)
   var.filled <- readNcdfVarName(file.filled)
@@ -47,9 +47,9 @@ plotGapfillCube <- function(
   
   ## calculate datacube info
   cat('Doing calculations ...\n')
-  cube.info.orig     <- parApply(cl = sfGetCluster(), data.orig, 1:2, getVecInfo)       
-  cube.info.filled   <- parApply(cl = sfGetCluster(), data.filled, 1:2, getVecInfo)
-  sfStop()
+  cube.info.orig     <- parApply(cl = cl, data.orig, 1:2, getVecInfo)       
+  cube.info.filled   <- parApply(cl = cl, data.filled, 1:2, getVecInfo)
+  stopCluster(cl)
   dimnames(cube.info.orig)[[1]] <- c('min', 'max', 'mean', 'sdev', 'range', 'ratio na',  'ratio na inner', 'ratio inf')
   dimnames(cube.info.filled)[[1]] <- c('min', 'max', 'mean', 'sdev', 'range', 'ratio na',  'ratio na inner', 'ratio inf')
   cube.info.agg       <- array(NA, dim=c(2, 9))
