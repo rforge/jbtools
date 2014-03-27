@@ -1,15 +1,10 @@
 Package: JBTools
-Title:   Collection of miscellaneous tools and helpers for R.
-Version: 0.7.1.2
-Date: 2011-02-15
+Title:   JBs tools and helper functions.
+Version: 0.7.2.4
+Date: 2014-01-01
 Author: Jannis v. Buttlar
 Maintainer: Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>
-Description: Collection of tools and functions used by other packages of the package author. 
- Some functions may be of use to others for general tasks, others are mainly used by the 
- spectral.methods and ncdf.tools package. All code is under constant development and errors 
- or bugs sometimes occour when the functions are used in new contexts and scenarios which 
- have not yet been tested. Please report all such errors to the mailing lists on R-Forge and 
- the author will try to fix them, time permitting.
+Description: Collection of tools and functions used by other packages of the package author. Most functions are specific for their usage in these packages but some are of general use for other applications.
 Imports: foreach, parallel, gplots, colorspace, plotrix, doMC
 License: GPL-2
 LazyLoad: yes

@@ -9,20 +9,21 @@ registerParallel <- function(
   ##seealso<< 
   ##\code{\link[foreach]{foreach}}, \code{\link[doMC]{registerDoMC}}
 {
-  
+  w <- NULL
   if (max.cores == 0) 
-    max.cores   <- getCoreLimit()
+    max.cores   <- detectCores()
   if (max.cores == 1 || getDoParWorkers() < max.cores) {
     cat(paste('Registering ', max.cores, ' cores.\n', sep = ''))
     if (pckg.parallel == 'doMC'){
-      w <<- max.cores
+      w <- max.cores
       registerDoMC(w)
     } else if (pckg.parallel == 'doParallel'){
-      w <<- makeCluster(max.cores)
+      w <- makeCluster(max.cores)
     } else if (pckg.parallel == 'snow') {
       stop('Do not use this function to create snow clusters. Use sfInit from package snowfall instead!')
     } else {
       stop(paste('Package ', pckg.parallel, ' is not (yet) supported!', sep=''))
     }
   }
+  invisible(w)
 }
