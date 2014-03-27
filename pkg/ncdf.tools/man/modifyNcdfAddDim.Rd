@@ -5,8 +5,7 @@
 another ncdf file}
 \usage{modifyNcdfAddDim(file.con.orig, file.con.copy, var.name = "Default", 
     dim.name = "new.dim", dim.values = c(), dim.length = length(dim.values), 
-    dim.pos.copy = 1)}
-\arguments{
+    dim.pos.copy = 1)}\arguments{
   \item{file.con.orig}{a NetCDF object pointing to the respective ncdf file FROM which to copy}
   \item{file.con.copy}{a NetCDF object pointing to the respective ncdf file TO which to copy}
   \item{var.name}{character vector: names of the variables to which a dimension should be added. Defaults to

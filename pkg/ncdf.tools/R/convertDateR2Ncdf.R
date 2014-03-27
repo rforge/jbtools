@@ -4,7 +4,7 @@ convertDateR2Ncdf = function(
        ncdf.obj              ##<< character string or ncdf connection: ncdf file for which to convert the dates    
       , date.vec='auto'      ##<< POSIXct vector: date vectors for the time dimension. If set to 'auto', this
                              ##   is tried to be extracted from the ncdf file
-      , origin="1582-10-14"  ##<< character string: origin to be used for the time vector. This start of the 
+      , origin="1800-01-01"  ##<< character string: origin to be used for the time vector. This start of the 
                              ##   Gregorian calendar should be kept to avoid possible mistakes due to flawed
                              ##   conversions.
       , write.to.ncdf = TRUE ##<< logical: whether to write the time vector to the ncdf file.                      

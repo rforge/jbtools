@@ -2,9 +2,8 @@
 \alias{convertDateR2Ncdf}
 \title{convert time vectors in ncdf files to Julian days since the start of Gregorian calendar   }
 \description{This function automatically converts time vectors in ncdf files to a standardized Gregorian calendar}
-\usage{convertDateR2Ncdf(ncdf.obj, date.vec = "auto", origin = "1582-10-14", 
-    write.to.ncdf = TRUE)}
-\arguments{
+\usage{convertDateR2Ncdf(ncdf.obj, date.vec = "auto", origin = "1800-01-01", 
+    write.to.ncdf = TRUE)}\arguments{
   \item{ncdf.obj}{character string or ncdf connection: ncdf file for which to convert the dates}
   \item{date.vec}{POSIXct vector: date vectors for the time dimension. If set to 'auto', this
 is tried to be extracted from the ncdf file}

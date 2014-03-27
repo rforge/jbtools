@@ -6,8 +6,7 @@ a target ncdf file with the results.}
 \usage{transNcdfSubset(file.name, dim.values = list(latitudes = c(), 
     longitudes = c(), timesteps = c()), values.type = c("range", 
     "indices", "values")[2], filename.new = sub("[.]nc", "_subs.nc", 
-    file.name))}
-\arguments{
+    file.name))}\arguments{
   \item{file.name}{character string: name of the file to create.}
   \item{dim.values}{
 }

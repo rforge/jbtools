@@ -7,35 +7,47 @@ readNcdfVarName <- function(
 ##description<<
 ## Try to automatically detect the name of the "main" variable in a ncdf file. The name returned is the
 ## name of the only non coordinate variable. If more than one of these is returned, the name of the variable
-## having the most dimensions is used.
+## having using all dimensions or with a name appearing as a pattern in the file name is used.
 
 ##seealso<<
 ## \code{\link[RNetCDF]{RNetCDF}}, \code{\link{infoNcdfVars}}
 
 {
   if (class(file) == 'character') {
+    file.name <- file
     file.con <- open.nc(file)
   } else {
     file.con <- file
+    file.name = ''
   }  
-  var.name         <- setdiff(infoNcdfVars(file.con, order.var ='id')$name, infoNcdfDims(file.con, extended = FALSE)$name)
-  names.excluded   <- c('time_bnds')
+  var.name         <- infoNcdfVars(file.con, order.var ='id',  dimvars = FALSE)$name
+
+  # exclude reserved names
+  names.excluded   <- c("lon_bnds", "lat_bnds", "time_bnds", "borders.low", "borders.up" )
   var.name         <- setdiff(var.name, names.excluded)
   var.name         <- var.name[!grepl('flag.orig$', var.name)]
-  if(length(var.name) > 1) {
-    var.id.nocoord <- infoNcdfVars(file.con, order.var ='id')[match(var.name, infoNcdfVars(file.con, order.var ='id')$name), 1]
-    var.nocoord.ndims <- infoNcdfVars(file.con, order.var ='id')[var.id.nocoord + 1, 4]
-    var.id <- var.id.nocoord[var.nocoord.ndims == max(var.nocoord.ndims)]    
-    if (length(var.id) > 1 && class(file) == 'character') {
-      names.nocoord <- infoNcdfVars(file.con, order.var = 'id')[var.id + 1,'name']
-      var.id        <- var.id[which(!is.na(pmatch(names.nocoord, file)))]
-    }
-    if ((length(var.id) > 1) ) {
-      stop('Not possible to detect variable name!')
-    } else {
-      var.name <-infoNcdfVars(file.con, order.var ='id')$name[var.id + 1]         
+
+  #try to determine variable name based on matches in file name
+  if (length(var.name) > 1 && nchar(file.name) > 0) {
+    names.matched <- pmatch(var.name,  file.name)
+    if (sum(!is.na(names.matched)) == 1) {
+      var.name <-  var.name[!is.na(names.matched)]
     }
   }
+
+  #try to determine variable name based dimension size matches  
+  if(length(var.name) > 1) {
+    vars.ndims <-  infoNcdfVars(file.con)$n.dims
+    n.dims <- dim(infoNcdfDims(file.con))[1]
+    if (sum(vars.ndims == n.dims ) == 1) {
+      var.name <-  var.name[vars.ndims == n.dims ]
+    }
+  }
+     
+  if ((length(var.name) > 1) ) {
+    stop('Not possible to detect variable name!')
+  } 
+  
   if (class(file) == 'character') {
     close.nc(file.con)
   } 

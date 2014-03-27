@@ -3,8 +3,8 @@
 \title{create logical index matrices for multidimensional datacubes}
 \description{This function facilitates supplying logical index array for some 
 of the dimensions of a data array. This mimics Matlabs indexing scheme.}
-\usage{indexDatacube(datacube = c(), logical.ind, dims = "auto", dims.datacube = dim(datacube))}
-\arguments{
+\usage{indexDatacube(datacube = c(),
+ logical.ind, dims = "auto", dims.datacube = dim(datacube))}\arguments{
   \item{datacube}{array: datacube from which to extract the sub-parts
 datacube and dims.datacube should be supplied.}
   \item{logical.ind}{logical array: TRUE/FALSE index matrix for a subset of the

@@ -4,8 +4,7 @@
 \description{Copies all values of one variable from one ncdf file to another ncdf file and
 takes care of dimensions etc.}
 \usage{modifyNcdfCopyVar(file.con.orig, file.con.copy = file.con.orig, 
-    var.id.orig, var.id.copy = var.id.orig)}
-\arguments{
+    var.id.orig, var.id.copy = var.id.orig)}\arguments{
   \item{file.con.orig}{a NetCDF object pointing to the original ncdf file FROM which to copy the variable.}
   \item{file.con.copy}{a NetCDF object pointing to the ncdf file TO which to copy the variable.}
   \item{var.id.orig}{character string or ncdf variable id: The name or id of the variable to copy from.}

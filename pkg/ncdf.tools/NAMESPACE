@@ -10,12 +10,11 @@ importFrom(abind, abind)
 import(foreach)
 import(doMC)
 importFrom(raster, raster)
-importFrom(JBTools, checkInstalled, convertArgs2String, getVecInfo, getCoreLimit,  
+importFrom(JBTools, checkInstalled, convertArgs2String, getVecInfo, 
            getSysinfo, indexDimVecs2Matrix, isSeriesContinuous, isSeriesConstant,
            labelMargins, MEF, plotImageRotated, plotBG, plotNLines, printStatus,
            rangeZeroEqui, registerParallel, RMSE, userCoords, whichClosest)
 importFrom(RColorBrewer, brewer.pal)
-import(snowfall)
-import(snow)
+import(parallel)
 importFrom(chron, seq.dates)
 importFrom(plotrix, color.legend)

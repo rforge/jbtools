@@ -4,8 +4,7 @@
 \description{This function checks whether a ncdf file is consistent with the parts of the COARDS/CF
 ncdf conventions that the MDI group agreed on.}
 \usage{checkNcdfFile(file.name, dims = c("longitude", "latitude", "time"), 
-    type = "strict", var.check = "single")}
-\arguments{
+    type = "strict", var.check = "single")}\arguments{
   \item{file.name}{character string: file name to check}
   \item{dims}{vector of strings:
 names of the dimensions which need to be in the file.}

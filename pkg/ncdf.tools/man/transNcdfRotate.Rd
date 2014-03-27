@@ -5,8 +5,7 @@
 file into a datacube with dimensions [latitude (decreasing), longitude (increasing),
 time (increasing)].}
 \usage{transNcdfRotate(data.object, file.name.out = "none", file.con = c(), 
-    var.name = c())}
-\arguments{
+    var.name = c())}\arguments{
   \item{data.object}{RNetCDF file connection or R array: data object to be transposed.}
   \item{file.name.out}{character string: name of the
 ncdf file created for the results. Default 'none' means that no

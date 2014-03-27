@@ -4,7 +4,6 @@
 \description{convenience function to close all ncdf connections that are 
 currently open. }
 \usage{closeAllNcfiles()}
-
 \value{nothing is returned.}
 
 \author{Jannis v. Buttlar}

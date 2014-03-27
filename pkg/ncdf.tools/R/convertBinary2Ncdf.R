@@ -54,7 +54,7 @@ convertBinary2Ncdf = function(
   var.put.nc(file.con,'latitude',dimension.values[dimensions=='latitude'][[1]])
   var.put.nc(file.con,'longitude',dimension.values[dimensions=='longitude'][[1]])
   time.lilian <- as.numeric(julian(dimension.values[dimensions=='time'][[1]],
-                                   origin = as.POSIXct("1582-10-14", tz="UTC")))
+                                   origin = as.POSIXct("1800-01-01", tz="UTC")))
   var.put.nc(file.con,'time',time.lilian)
   modifyNcdfDefAtts(file.con,var.name,atts=list(long_name=long_name))
   history.string <- paste(Sys.time(),' ncdf file created from file ', file.input,
