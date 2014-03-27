@@ -671,6 +671,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 #                process.type = process.type, amnt.artgaps = amnt.artgaps, 
 #                size.biggap = size.biggap, max.cores = max.cores)
   })
+globalVariables('i')
 
 
 ##################################### save results #############################

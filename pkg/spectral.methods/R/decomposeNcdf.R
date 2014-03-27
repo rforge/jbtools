@@ -380,3 +380,4 @@ decomposeNcdf = structure(function(
   }
   return(data.results.iter)
 }
+globalVariables('i')
