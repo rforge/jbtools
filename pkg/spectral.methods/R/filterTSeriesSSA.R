@@ -485,8 +485,8 @@ series                      ##<< numeric vector: Input time series (no gaps!)
   )
 }, ex = function(){
   #create series consisting of two oscillations and noise
-  series.ex <- sin(2 * pi * 1:10000 / 1000) +  0.7 * sin(2 * pi * 1:10000 / 100)  +
-    rnorm(n = 10000, sd = 0.4)
+  series.ex <- sin(2 * pi * 1:1000 / 100) +  0.7 * sin(2 * pi * 1:1000 / 10)  +
+    rnorm(n = 1000, sd = 0.4)
 
   #prepare graphics
   layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), ncol = 2))
@@ -496,10 +496,10 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 
   #perform decomposition
   data.decomposed <- filterTSeriesSSA(series = series.ex,
-      borders.wl = list(a = c(80, 120), b = c(800, 1200)
-          , c = c(0, 100, 1000, Inf)),
-      M = c(300, 2000, 1000),
-      n.comp = c(40, 80, 80),
+      borders.wl = list(a = c(8, 12), b = c(80, 120)
+          , c = c(0, 10, 100, Inf)),
+      M = c(30, 200, 100),
+      n.comp = c(10, 20, 20),
       harmonics = c(1, 0, 0),
       plot.spectra = TRUE, open.plot = FALSE)
 
