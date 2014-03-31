@@ -5,7 +5,8 @@
 the data cube of a ncdf file. }
 \usage{summarizeTemporalGapsNcdf(ncdf.obj, var.name = "auto", ind.groups = c(), 
     grids.exclude = NULL, col.palette = colorRampPalette(c("blue", 
-        "yellow", "red")))}\arguments{
+        "yellow", "red")))}
+\arguments{
   \item{ncdf.obj}{file name or ncdf connection: link to the ncdf file to analyze}
   \item{var.name}{character string: name of the variable to analyze. If set to 'auto',
 the variable with the most dimensions will be used.}

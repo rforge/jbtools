@@ -2,7 +2,8 @@
 \alias{calcFrequency}
 \title{determine frequency of time series}
 \description{Function to determine the "main" frequency of a time series.}
-\usage{calcFrequency(series, plot.periodogram = FALSE)}\arguments{
+\usage{calcFrequency(series, plot.periodogram = FALSE)}
+\arguments{
   \item{series}{numeric vector: input time series}
   \item{plot.periodogram}{logical: whether to plot a periodogram}
 }

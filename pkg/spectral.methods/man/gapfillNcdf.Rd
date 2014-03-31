@@ -21,9 +21,9 @@ to another ncdf file.}
     ratio.test = 1, reproducible = FALSE, size.biggap = rep(list(rep(list(20), 
         times = length(dimensions[[1]]))), times = length(dimensions)), 
     tresh.const = 1e-12, tresh.converged = 0, tresh.fill = c(list(list(0.1)), 
-        rep(list(list(0,
- 0)), length(dimensions) - 1)), tresh.fill.first = list(tresh.fill[[1]]), 
-    var.names = "auto", ...)}\arguments{
+        rep(list(list(0, 0)), length(dimensions) - 1)), tresh.fill.first = list(tresh.fill[[1]]), 
+    var.names = "auto", ...)}
+\arguments{
   \item{amnt.artgaps}{list of numeric vectors:
 The relative ratio (length gaps/series length) of
 artificial gaps to include in the "innermost" SSA loop (e.g. the value used by the

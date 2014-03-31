@@ -2,7 +2,8 @@
 \alias{readNcdfSpectral}
 \title{read spectrally saved Ncdf data}
 \description{Read spectrally saved ncdf data (i.e. the output of a call to decomposeNcdf).}
-\usage{readNcdfSpectral(fileName, varName, rangeBandsGet)}\arguments{
+\usage{readNcdfSpectral(fileName, varName, rangeBandsGet)}
+\arguments{
   \item{fileName}{character string: name of the ncdf file}
   \item{varName}{character string: name of the variable to extract.}
   \item{rangeBandsGet}{vector: Vector defining the bands to extract. Can be either

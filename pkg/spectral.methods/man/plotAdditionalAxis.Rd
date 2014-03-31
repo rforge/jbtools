@@ -2,7 +2,8 @@
 \alias{plotAdditionalAxis}
 \title{Add second axis with transferred labels}
 \description{This function adds a second axis with differing labels to the plot.}
-\usage{plotAdditionalAxis(side = 1, trans.fun, label = c(), ...)}\arguments{
+\usage{plotAdditionalAxis(side = 1, trans.fun, label = c(), ...)}
+\arguments{
   \item{side}{integer: which axis to use as a basis for the second one.}
   \item{trans.fun}{function: the transfer function to use between the two axis values.}
   \item{label}{character: labels of the axis.}

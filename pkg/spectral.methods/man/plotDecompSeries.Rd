@@ -4,7 +4,8 @@
 \description{This function plots an visualisation of a SSA decomposed ncdf file.  
 \if{html}{\out{<img src="../doc/visualize_ncdf_demo.png" alt="image ..visualize_ncdf_demo should be here"/>}}\ifelse{latex}{}{}}
 \usage{plotDecompSeries(file.orig, file.decomp = sub("[.]nc", "_specdecomp.nc", 
-    file.orig), file.plot = "", ...)}\arguments{
+    file.orig), file.plot = "", ...)}
+\arguments{
   \item{file.orig}{object to plot: file name or file.con object linking
 to the original ncdf file}
   \item{file.decomp}{object to plot:

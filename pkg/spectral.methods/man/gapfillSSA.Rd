@@ -16,7 +16,8 @@ scheme with artificial gaps is used to determine these periodic components.}
     remove.infinite = FALSE, scale.recstr = TRUE, series, seed = integer(), 
     size.biggap = 20, SSA.methods = c("nutrlan", "propack", "eigen", 
         "svd"), tresh.convergence = 0.01, tresh.min.length = 5, 
-    z.trans.series = TRUE)}\arguments{
+    z.trans.series = TRUE)}
+\arguments{
   \item{amnt.artgaps}{numeric vector: The relative ratio (amount gaps/series length) of
 artificial gaps to include to determine the iteration with the best
 prediction (c(ratio big gaps, ratio small gaps)). If this is set to
