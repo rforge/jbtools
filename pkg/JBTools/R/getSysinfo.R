@@ -1,6 +1,9 @@
 getSysinfo=function()
-##title<< extract system information
-##description<< convenience function to compile some information about the system used.
+##title<< Compile system information
+##description<< getSysinfo is a convenience function to compile some information about the
+## computing system and environment used.
+##details<< The function is mainly used to save the system environment information
+##          in ncdf files containing the results of some calculations. 
 {
     package.names=sapply(sessionInfo()[['otherPkgs']],'[[','Package')
     package.versions=sapply(sessionInfo()[['otherPkgs']],'[[','Version')

@@ -1,10 +1,10 @@
 userCoords <- structure(function(
-##title<< transfer coordinates in plots to use relative coordinates
-##description<< The fundtion transfers the coordinate system in any plot to a relative system
-##               with values between 0 and 1. This helps to position text etc. in plots.
+##title<< Transfer relative to actual plot coordinate values
      x=c()    ##<< numeric vector(0-1): relative coordinates on the x axis
      ,y=c()   ##<< numeric vector(0-1): relative coordinates on the y axis
 )
+##description<< userCoords transfers realtive coordinate values (i.e. values between
+##              0 and 1) to the actual coordinate system of the plot.
 ##details<< x and y need to be values between 0 and 1. These values are then mapped to the
 ##          coordinates used in the current plot.
 {
@@ -29,10 +29,9 @@ userCoords <- structure(function(
     } else if (length(x) ==0) {
         output=list(y=y_trans)
     } else {
-        ##value<< list with x and/or y component with values in the current coordinate system        
         output=list(x=x_trans,y=y_trans)        
     }
-    ##value<< list with x and y coordinates
+    ##value<< list with x and/or y component with values in the current coordinate system        
     return(output)
 },ex=function(){
     plot(1:10)

@@ -1,18 +1,17 @@
 \name{plotNLines}
 \alias{plotNLines}
-\title{plot many functions in one plot}
-\description{the function uses different techniques to visualize many plots on one display.}
+\title{Plot many lines in one plot}
+\description{plotNLines function uses different techniques to visualize many line plots on one display.}
 \usage{plotNLines(x.data = matrix(1:dim(y.data)[2], ncol = dim(y.data)[2], 
     nrow = dim(y.data)[1], byrow = TRUE), y.data, option = c("normal", 
     "diff.scales", "stacked")[1], n.lines.max = 30, grid = FALSE, 
     scale = 1, plot.scale = TRUE, function.add = function() (1), 
     bgc = "white", pch.axlink = 1, type = "l", colors = c(), 
     xlim = c(), ylim = c(), xlab = c(), ylab = c(), labels = c(), 
-    lty = 1, title, yaxt = "s", ...)}
-\arguments{
+    lty = 1, title, yaxt = "s", ...)}\arguments{
   \item{x.data}{
 }
-  \item{y.data}{numeric matrix/dataframe: y-values with one series of
+  \item{y.data}{numeric matrix/data frame: y-values with one series of
 values per row}
   \item{option}{character: which type of plot to use (see details)}
   \item{n.lines.max}{integer: only for 'stacked plots': how many lines to draw per panel}
@@ -34,7 +33,7 @@ values per row}
   \item{yaxt}{standard plotting parameter}
   \item{\dots}{further arguments passed to the plot() calls}
 }
-\details{Many parameters are identical to standart plotting parameters (see ?par,?plot)
+\details{Many parameters are identical to standard plotting parameters (see ?par,?plot)
 and are not explained here.
 The function offers three options:
 'normal':

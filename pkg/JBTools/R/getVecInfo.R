@@ -1,5 +1,5 @@
 getVecInfo <- function(
-  ##title<< compute vector summary statistics
+  ##title<< Compute vector summary statistics
   x ## << vector: input vector
   )
   ##description<< This function computes several summary statistics of a vector.
@@ -21,8 +21,8 @@ getVecInfo <- function(
     n.na.in <- sum(is.na(x[min(which(!is.na(x))):max(which(!is.na(x)))])) / length(x)
   }
   n.inf     <- sum(is.infinite(x)) / length(x)
-  out       <- c(min.x, max.x, mean.x, sd.x, diff(range.x), n.na, n.na.in, n.inf)
   ##value<< vector with the vector statistics (min,  max, mean,  sdev, range, ratio na, ratio na inner,  ratio INF)
+  out       <- c(min.x, max.x, mean.x, sd.x, diff(range.x), n.na, n.na.in, n.inf)
   names(out)<- c('min', 'max', 'mean', 'sdev', 'range', 'ratio na', 'ratio na inner', 'ratio inf')
   return(out)
 }  

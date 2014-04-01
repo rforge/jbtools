@@ -1,5 +1,5 @@
 RMSE <-function(
-##title<< compute the RMSE
+##title<< Compute the residual mean square error (RMSE)
    prediction    ##<< numeric: array 1
    , observation ##<< numeric: array 2
 )

@@ -1,5 +1,5 @@
 indexDimVecs2Matrix <- function(
-  ##title<< Transform integer indices to an index matrix.
+  ##title<< Transform integer indices to an index matrix
   ... ##<< integer vectors: indices to use for the different dimensions
   ) {
   ##description<< Transform integer indices to an index matrix. The input have to be

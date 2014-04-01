@@ -1,8 +1,8 @@
 whichClosest=function(
-  ##title<< find closest matches in two vectors
+  ##title<< Find closest matches in two vectors
    x         ##<< numeric vector: values that should be found in x.match
-   ,x.match  ##<< numeric vector: values the values of x should be matcheed against
-  , arr.ind = FALSE ##logical: whether to return matrix indices or not. 
+   ,x.match  ##<< numeric vector: values the values of x should be matched against
+  , arr.ind = FALSE ##logical: whether to return matrix indices or not.
 )
   ##description<< Function to find closest matches of vector A in vector B and return
   ##              the respective indices.

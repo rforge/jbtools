@@ -1,6 +1,6 @@
 plotColorScale <- function(
-    ##title<< add color scale to plots
-    ##description<< Wrapper function around color.legend to ease its usage.
+    ##title<< Add a color scale to plots
+    ##description<< plotColorScale is a wrapper function around color.legend to ease its usage.
    col               ##<< vector of color strings defining the palette to use
    , zlim = c()      ##<< numeric vector (of length 2) defining the upper and lower limit
                      ##   of the values mapped to the color scale.
@@ -70,5 +70,5 @@ plotColorScale <- function(
    par(xpd=NA)
    text(labels = title, x = pos.text$x, y = pos.text$y, pos = 3, cex = cex.title)
  }
-   
+ ##value<< Nothing is returned.
 } 

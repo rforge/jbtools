@@ -1,5 +1,5 @@
 MEF <-function(
-  ##title<< compute the MEF
+  ##title<< Compute the modelling efficiency (MEF)
   prediction    ##<< numeric: array 1
   , observation ##<< numeric: array 2
 )

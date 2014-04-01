@@ -9,4 +9,4 @@ importFrom(parallel, makeCluster, detectCores)
 importFrom(gplots, col2hex)
 importFrom(colorspace, hex, hex2RGB, mixcolor)
 importFrom(plotrix, color.legend)
-import(doMC)
+

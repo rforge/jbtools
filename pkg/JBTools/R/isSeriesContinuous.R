@@ -1,8 +1,11 @@
 isSeriesContinuous = function(
-    ##title<< test for continuous (non NA interupted) series
+    ##title<< Test for continuous (non NA interrupted) series
     x ##<< numeric vector: series to test
   )
   ##description<<
+  ## isSeriesContinuous test whether a vector contains one non interrupted sequence
+  ## of values (i.e. no NaN in between). 
+  ##details<<
   ## The function returns TRUE when the vector contains one (and only one)
   ## non NA interupted sequence of values. E.g. it would also return 
   ## TRUE for a vector that contains a sequence of NAs at the beginning

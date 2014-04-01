@@ -1,10 +1,10 @@
 colorChangeDarkness <- function(
-  ##title<< change dark/brightness of a color
+  ##title<< Change the dark/brightness of a color
   col ##<< color to change. Can be a R color name or a hexadecimal color specification
   , factor ##<< decimal factor to darken/brighten the color with. Values < 1 lead to darker
            ##   colors,  values > 1 to brighter colors.
   )
-  ##description<< Function to yield darker or brighter variants of the same color #
+  ##description<< Function to yield darker or brighter variants of the same color
   ##              by mixing this color with white or black
   ##seealso<<
   ##\code{\link{mixcolor}}

@@ -1,10 +1,9 @@
 plotNLines <- function(
-    ##title<< plot many functions in one plot
-    ##description<< the function uses different techniques to visualize many plots on one display.
+    ##title<< Plot many lines in one plot
     x.data = matrix(1:dim(y.data)[2], ncol = dim(y.data)[2], nrow =dim(y.data)[1], byrow=TRUE)                     
-                                ##<< numeric matrix/dataframe: x-values with one series of
+                                ##<< numeric matrix/data frame: x-values with one series of
                                 ##   values per row
-    ,y.data                     ##<< numeric matrix/dataframe: y-values with one series of
+    ,y.data                     ##<< numeric matrix/data frame: y-values with one series of
                                 ##   values per row
     ,option=c('normal','diff.scales','stacked')[1] ##<< character: which type of plot to use (see details)
     ,n.lines.max=30             ##<< integer: only for 'stacked plots': how many lines to draw per panel
@@ -26,8 +25,8 @@ plotNLines <- function(
     ,yaxt='s'                   ##<< standard plotting parameter
     ,...                        ##<< further arguments passed to the plot() calls
 )
-
-##details<< Many parameters are identical to standart plotting parameters (see ?par,?plot)
+##description<< plotNLines function uses different techniques to visualize many line plots on one display.
+##details<< Many parameters are identical to standard plotting parameters (see ?par,?plot)
 ##and are not explained here.
 ##The function offers three options:
 ##'normal':

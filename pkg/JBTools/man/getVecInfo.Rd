@@ -1,9 +1,8 @@
 \name{getVecInfo}
 \alias{getVecInfo}
-\title{compute vector summary statistics}
+\title{Compute vector summary statistics}
 \description{This function computes several summary statistics of a vector.}
-\usage{getVecInfo(x)}
-\arguments{
+\usage{getVecInfo(x)}\arguments{
   \item{x}{
 }
 }

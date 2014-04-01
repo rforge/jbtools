@@ -1,30 +1,30 @@
 plotImageRotated = function(
-        data             ##<< matrix: data to be plotted
-        ,col.vals = c()  ##<< numeric vector: coordinate values for the columns of data
-        ,row.vals = c()  ##<< numeric vector: coordinate values for the rows of data
-        ,scale = TRUE    ##<< logical: whether to plot a color scale besides the plot.
-        ,col = heat.colors(20) ##<< color vector: colors to create the color scale.
-        ,zlim = range(data, na.rm=TRUE) ##<< numeric vector (length two): outer 
-                         ##   limits of the colorscale. Values above or below this 
-                         ##   range are colored brighter/darker than the maximum/minimum 
-                         ##   color (see ?plotColorScale).
-        ,title = ''      ##<< character string: title of the color legend.
-        , useRaster=TRUE ##<< argument passed to image() to decide whether to 
-                         ##   draw polygons (FALSE) or use a bitmap raster (TRUE).
+  ##title<< Plot a rotated image plot 
+  data             ##<< matrix: data to be plotted
+  , col.vals = c() ##<< numeric vector: coordinate values for the columns of data
+  , row.vals = c() ##<< numeric vector: coordinate values for the rows of data
+  , scale = TRUE   ##<< logical: whether to plot a color scale besides the plot
+  , col = heat.colors(20) ##<< color vector: colors to create the color scale.
+  , zlim = range(data, na.rm=TRUE) ##<< numeric vector (length two): outer 
+                   ##   limits of the color-scale. Values above or below this 
+                   ##   range are colored brighter/darker than the maximum/minimum 
+                   ##   color (see ?plotColorScale).
+  , title = ''     ##<< character string: title of the color legend
+  , useRaster=TRUE ##<< argument passed to image() to decide whether to 
+                   ##   draw polygons (FALSE) or use a bitmap raster (TRUE).
   , xlab = ''
   , ylab = ''
-        ,...             ##<< further arguments passed to image
+  , ...            ##<< further arguments passed to image
 )
-##title<< plot rotated image plot
-##description<< plot a raster/matrix using image() but supplying a rotated version of the matrix
+##description<< plotImageRotated plots a raster/matrix using image() but supplying
+##              a rotated version of the matrix,  i.e. it plots the matrix as it
+##              printed on the screen.         
 ##details<< The normal image() function always plots a rotated version of a matrix. This function 
-##          rotates the input to image in a way that the first entry of the matrix (col=1,row=1)
+##          rotates the input to image in a way that the first entry of the matrix (col=1, row=1)
 ##          shows up at the top-left corner of the plot. In other words the way a matrix would be 
 ##          displayed by printing it directly mapped to the plot.
 ##seealso<<
 ##\code{\link{image}}, \code{\link{plotColorScale}}, the plotting routines of the raster package
-##author<<
-## Jannis v. Buttlar, MPI BGC Jena, Germany, jbuttlar@bgc-jena.mpg.de
 {
   oopts <- options(warn = -1)
   add.args = list(...)
@@ -74,7 +74,7 @@ plotImageRotated = function(
   
 
   
-                                        # add zrange outliers 
+  ## add zrange outliers 
   outer.range <- c(0, 0)
   if (sum(data.p > max(zlim), na.rm = TRUE) > 0) {
     col.drk = colorChangeDarkness(col[length(col)], 0.5)
@@ -113,4 +113,5 @@ plotImageRotated = function(
     plotColorScale(col = col, pos = 'right', zlim = zlim, outer.range = outer.range, title = title)
     par(mar = old.mar)
   }
+   ##value<< Nothing is returned.
 }    

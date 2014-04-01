@@ -1,11 +1,14 @@
 checkInstalled <- function(
-  ##title<< check whether external program is installed
+  ##title<< Check whether a command can be invoked via the command line
   commandName ##<< character string: name of the program/command to check
   )
   ##description<<
-  ## This function checks whether an external program is installed on the machine.
+  ## checkInstalled checks whether an external command can be run on the command line.
+  ##details<<
+  ## The test is a simple wrapper around Sys.which which returns TRUE if which returns
+  ## a character string and FALSE if not. 
 {
- out <- try(system(paste('which', commandName), intern = TRUE), silent = TRUE)
+ out <- Sys.which(commandName)
  if (length(out) == 0) {
    output <- FALSE
  } else {
