@@ -1,7 +1,7 @@
 \name{createStdNcdfFile}
 \alias{createStdNcdfFile}
-\title{create an empty ncdf file with standardized attributes and dimensions}
-\description{This function writes an empty ncdf file with variable names, dimensions and
+\title{Create an empty netCDF file with standardized attributes and dimensions}
+\description{This function writes an empty netCDF file with variable names, dimensions and
 attributes formatted in a standardized way.}
 \usage{createStdNcdfFile(var.names, file.name = c(), units = "[]", lat.values = c(), 
     long.values = c(), time.values = c(), add.dims = list(), 

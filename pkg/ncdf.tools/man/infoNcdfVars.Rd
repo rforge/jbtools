@@ -1,11 +1,11 @@
 \name{infoNcdfVars}
 \alias{infoNcdfVars}
-\title{display information about all variables in ncdf file}
+\title{Display information about all variables in netCDF file}
 \description{This function returns different summary information about all variables
-in a NCDF file.}
+in a netCDF file.}
 \usage{infoNcdfVars(file.con, order.var = c("id", "name")[2], info.ext = FALSE, 
     dimvars = FALSE)}\arguments{
-  \item{file.con}{a NetCDF object pointing to the respective ncdf file.}
+  \item{file.con}{a NetCDF object pointing to the respective netCDF file.}
   \item{order.var}{character vector:
 Whether to sort the variables according to their name (default) or id.}
   \item{info.ext}{logical: whether to compute ranges/means etc. for the variables.

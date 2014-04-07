@@ -1,11 +1,11 @@
 transNcdfRotate  = function(
-##title<< transpose Ncdf datacube
-##description<< convenience function to transpose an arbitrary datacube in a ncdf 
-##              file into a datacube with dimensions [latitude (decreasing), longitude (increasing),
-##              time (increasing)].
+##title<< Transpose a NetCDF datacube
+##description<< transNcdfRotate is a convenience function to transpose a datacube
+##              arranged in an arbitrary dimension order into a datacube with dimensions [
+##              latitude (decreasing), longitude (increasing), time (increasing)].
     data.object ##<< RNetCDF file connection or R array: data object to be transposed.
     , file.name.out = 'none' ##<< character string: name of the
-                ## ncdf file created for the results. Default 'none' means that no
+                ## netCDF file created for the results. Default 'none' means that no
                 ## results file is created.
     , file.con = c() ##<< RNetCDF file connection: link to the data object to be transposed. 
                 ## Supplying both data.object and file.con only makes sense if data.object
@@ -21,7 +21,7 @@ transNcdfRotate  = function(
   } else if (inherits(data.object,  "array")) {
     datacube     <- data.object
     if (!inherits(file.con,  "NetCDF"))
-      stop('Please supply a valid pointer to a ncdf file via file.con!')
+      stop('Please supply a valid pointer to a netCDF file via file.con!')
   } else {
     stop(paste('Function not designed for data.object of class', class(data.object), '!'))
   }

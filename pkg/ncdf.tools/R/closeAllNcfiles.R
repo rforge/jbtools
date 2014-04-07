@@ -1,6 +1,6 @@
 closeAllNcfiles = function()
-##title<< close all open ncdf connections
-##description<< convenience function to close all ncdf connections that are 
+##title<< Close all open RnetCDF file connections
+##description<< closeAllNcfiles is a convenience function to close all netCDF connections that are 
 ##              currently open. 
 {
   object.close=character(length=0)

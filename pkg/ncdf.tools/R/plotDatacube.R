@@ -1,8 +1,8 @@
 plotDatacube <- function(
-  ##title<< visualize/plot an overview of a ncdf file
-  data.object         ##<< object to plot: file name or file.con object linking to a ncdf file
+  ##title<< Visualize/plot an overview of a netCDF file
+  data.object         ##<< object to plot: file name or file.con object linking to a netCDF file
   , data = c()        ##<< array: data to plot. Can be passed to the function to
-                      ##   prevent the repeated loading of huge ncdf data.
+                      ##   prevent the repeated loading of huge netCDF data.
   , fourth.dim = 0     ##<< position in possible forth dimension (height, spectral band etc) to plot
   , var.name = 'auto' ##<< character string: name of the variable to plot
   , parallel = FALSE  ##<< logical: Whether to parallelize the computations.
@@ -13,7 +13,7 @@ plotDatacube <- function(
   , ...
 )
   ##description<<
-  ## This function plots some overview statistics of a ncdf file.
+  ## This function plots some overview statistics of a netCDF file.
   ##\if{html}{\out{<img src="../doc/visualize_ncdf_demo.png" alt="image ..visualize_ncdf_demo should be here"/>}}\ifelse{latex}{}{}
 {
   ##TODO facilitade datacube input
@@ -22,9 +22,7 @@ plotDatacube <- function(
   cat('Preparing stuff ...\n')
   if (parallel) {
     cat('Registering cluster ...\n')
-    if (!exists('cl') || !inherits(cl, 'cluster')) {
-      cl <- makeCluster(max.cores)
-    }
+    cl <- makeCluster(max.cores)
   }  
   if (class(data.object) == 'NetCDF') {
     file.con   = data.object

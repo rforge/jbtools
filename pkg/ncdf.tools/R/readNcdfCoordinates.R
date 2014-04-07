@@ -1,11 +1,11 @@
 readNcdfCoordinates = function(
-  ##title<< read coordinate or dimension values from ncdf file
-  fileCon ##<< ncdf file connection or character string: Connection to the
-          ##   ncdf file or its file name. In the latter case, the connection is
+  ##title<< Read coordinate or dimension values from netCDF file
+  fileCon ##<< netCDF file connection or character string: Connection to the
+          ##   netCDF file or its file name. In the latter case, the connection is
           ##   created and closed automatically.
   )
   ##description<<
-  ##This function reads the coordinate values from a ncdf file.
+  ##This function reads the coordinate values from a netCDF file.
   ##seealso<<
   ##\code{\link{infoNcdfDims}}
   {

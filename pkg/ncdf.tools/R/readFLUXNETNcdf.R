@@ -1,5 +1,5 @@
 readFLUXNETNcdf <- function(
-  ##title<< read data from FLUXNET Ncdf file.
+  ##title<< read data from FLUXNET NetCDF file.
   path = getwd()  ##<< character string: path to the input file(s)
   , sites         ##<< character string: ids of the sites to extract
   , pars = 'all'  ##<< character string: names of the variables to extract
@@ -7,7 +7,7 @@ readFLUXNETNcdf <- function(
   , dim.borders = list(1)##<< list: indices for other dimensions
   )
   ##description<<
-  ## This function reads data from standard FLUXNET ncdf files and returns it in
+  ## This function reads data from standard (BGI - Jena) FLUXNET netCDF files and returns it in
   ## an R object.
 {
   owd        <- setwd(path)

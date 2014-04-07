@@ -1,12 +1,12 @@
 modifyNcdfStdNames =  function(
-  ##title<< modify non standard longitude and latitude names
+  ##title<< Modify non standard longitude and latitude names
   fileCon ##<< file in which to modify the names. can be supplied as a character vector
-          ##   or as a ncdf file connection.
+          ##   or as a netCDF file connection.
   )
-  ##description<< This function modifies lat, lon and long dimension names to 'latitude'
-  ##              and 'longitude'
+  ##description<< This function modifies dimension names like 'lat', 'lon' and 'long' to 'latitude'
+  ##              and 'longitude'.
 {
-                                        # check for file and open if necessary
+  ## check for file and open if necessary
   closeNcdf  <- FALSE
   if (inherits(fileCon, 'character')) {
     if (!file.exists(fileCon))
@@ -15,7 +15,7 @@ modifyNcdfStdNames =  function(
     closeNcdf <-  TRUE
   }
   
-  # modify some latitude and longitude names
+  ## modify some latitude and longitude names
   diminfo <- infoNcdfDims(fileCon)
   names.change =  list(latitude = c('lat'), longitude = c('lon', 'long'))
   for (i in 1:length(names.change)) {
@@ -29,7 +29,7 @@ modifyNcdfStdNames =  function(
      }
   }
 
-  #close ncdf file
+  #close netCDF file
   if (closeNcdf)
     close.nc(fileCon)
   ##value<< Nothing is returned

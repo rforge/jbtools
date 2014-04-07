@@ -1,13 +1,13 @@
 modifyNcdfCopyMetadata <- function(
-##title<< copy attributes and dimensions between ncdf files
-    file.con.orig        ##<< a NetCDF object pointing to the respective ncdf file from which to copy
-    , file.con.copy      ##<< a NetCDF object pointing to the respective ncdf file to which to copy
+##title<< Copy attributes and dimensions between netCDF files
+    file.con.orig        ##<< a NetCDF object pointing to the respective netCDF file from which to copy
+    , file.con.copy      ##<< a NetCDF object pointing to the respective netCDF file to which to copy
     , glob.atts = TRUE   ##<< logical: whether to copy all global attributes
     , dimensions = TRUE  ##<< logical: whether to copy all dimensions
     )
   ##description<<
   ## This function copies all global attributes and/or all dimensions from one
-  ## ncdf file to another.
+  ## netCDF file to another.
 
   ##seealso<<
   ##\code{\link{modifyNcdfCopyVar}}, \code{\link[RNetCDF]{att.copy.nc}}

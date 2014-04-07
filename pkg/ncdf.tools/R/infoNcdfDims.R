@@ -1,11 +1,11 @@
 infoNcdfDims  <- function(
-##title<< show info about all dimensions in a ncdf file
-     file.con  ##<< a NetCDF object pointing to the respective ncdf file.
+##title<< Show info about all dimensions in a netCDF file
+     file.con  ##<< a NetCDF object pointing to the respective netCDF file.
      , extended = TRUE ##<< logical: if TRUE, some extended dimension info that 
                        ##   may take time to compute for large files is computed.
 )
   ##description<<
-  ## This function displays summary information about all dimensions in an open ncdf file
+  ## This function displays summary information about all dimensions in a netCDF file.
   ##seealso<<
   ##\code{\link{infoNcdfVars}}, \code{\link[RNetCDF]{dim.inq.nc}}
 {

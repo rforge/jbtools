@@ -1,8 +1,8 @@
 \name{transNcdfSubset}
 \alias{transNcdfSubset}
-\title{cut subset out of ncdf file}
-\description{This function reads a subset of lat/lon/time values out of a ncdf file and creates
-a target ncdf file with the results.}
+\title{Cut and save a subset of a netCDF file}
+\description{This function reads a subset of lat/lon/time values out of a netCDF file and creates
+a new netCDF file with the results.}
 \usage{transNcdfSubset(file.name, dim.values = list(latitudes = c(), 
     longitudes = c(), timesteps = c()), values.type = c("range", 
     "indices", "values")[2], filename.new = sub("[.]nc", "_subs.nc", 

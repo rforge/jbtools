@@ -1,10 +1,10 @@
 \name{infoNcdfAtts}
 \alias{infoNcdfAtts}
-\title{return a summary of all ncdf variable attributes}
+\title{Print a summary of all netCDF variable attributes}
 \description{This function returns a summary of all attributes of a single variable
-in a ncdf file}
+in a netCDF file. }
 \usage{infoNcdfAtts(file.con, var.id = "NC_GLOBAL")}\arguments{
-  \item{file.con}{a NetCDF object pointing to the respective ncdf file.}
+  \item{file.con}{a NetCDF object pointing to the respective netCDF file.}
   \item{var.id}{the name or id of the variable for which to display attributes.}
 }
 \details{If an id or variable name is given for 'var.id ', attributes from one variable are returned.

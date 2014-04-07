@@ -1,5 +1,5 @@
 createLatLongTime <- function(
-  ##title<< create empty lat/lon/time ncdf file
+  ##title<< Create empty lat/lon/time netCDF file
   file.name                           ##<< character string: name of the target file.
   , var.names = sub('[.]nc', '', file.name) ##<< character vector: names of the variables
                                       ##         in the target file.
@@ -19,7 +19,7 @@ createLatLongTime <- function(
   , units = '[]'           ##<< character string: units of the variables in target file.  
 )
   ##description<<
-  ## this function creates an empty standardized latitude/longitude/time ncdf file.
+  ## this function creates an empty standardized latitude/longitude/time netCDF file.
   ##value<<
   ## Nothing is returned but a file is created. 
 {

@@ -1,14 +1,14 @@
 modifyNcdfDefAtts <- structure(function(
-##title<< define several ncdf attributes at once
-    file.con      ##<< a NetCDF object pointing to the respective ncdf file.
+##title<< Define a set netCDF attributes at once
+    file.con      ##<< a NetCDF object pointing to the respective netCDF file.
     , var.id      ##<< the variable id (integer) or name (string) for which to define attributes.
     , atts        ##<< list: the attributes to define (see details or an example).
     )
 ##description<<
-## Easily define a couple of attributes for a single ncdf variable in one step.
+## Easily define a couple of attributes for a single netCDF variable in one step.
 ##details<<
 ##The atts attribute should be a list with as many elements as attributes should be added to the
-##variable in the ncdf file. The names of the attributes are taken from the names of the
+##variable in the netCDF file. The names of the attributes are taken from the names of the
 ##elements of this list and the attribute values are defined by the values of the list elements.
 ##The type/class of the attribute (values) is determined automatically.
 
@@ -40,7 +40,7 @@ modifyNcdfDefAtts <- structure(function(
     att.put.nc(file.con, var.id, att.names[i], att.type, att.value)
   }
 }, ex = function() {
-  ## needs an open connection to a valid ncdf file pointed to by file.con
+  ## needs an open connection to a valid netCDF file pointed to by file.con
   attributes.define <- list(LongName = 'This is the long name',
                             missingValue = -99999,
                             units = 'm/s')

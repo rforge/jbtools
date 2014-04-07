@@ -1,5 +1,5 @@
 transNcdfMerge <- function(
-    ##title<< merge several ncdf files
+    ##title<< Merge several netCDF files
       file.names ##<< character vector: names of the files to merge.
       , name.change = function(x) return(x) 
       , time.diff = NULL ##<< maximum time difference to be allowed between two subsequent 
@@ -16,7 +16,7 @@ transNcdfMerge <- function(
   ,  target.name =  ''
 )
   ##description<<
-  ## Convenience wrapper around cdo to merge several ncdf files containing
+  ## transNcdfMerge is a convenience wrapper around cdo to merge several netCDF files containing
   ## subsequent time steps into one continuous file.
 {
   ##TODO useful defaults

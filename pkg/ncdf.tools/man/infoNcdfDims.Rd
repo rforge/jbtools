@@ -1,9 +1,9 @@
 \name{infoNcdfDims}
 \alias{infoNcdfDims}
-\title{show info about all dimensions in a ncdf file}
-\description{This function displays summary information about all dimensions in an open ncdf file}
+\title{Show info about all dimensions in a netCDF file}
+\description{This function displays summary information about all dimensions in a netCDF file.}
 \usage{infoNcdfDims(file.con, extended = TRUE)}\arguments{
-  \item{file.con}{a NetCDF object pointing to the respective ncdf file.}
+  \item{file.con}{a NetCDF object pointing to the respective netCDF file.}
   \item{extended}{logical: if TRUE, some extended dimension info that
 may take time to compute for large files is computed.}
 }

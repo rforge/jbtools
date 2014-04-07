@@ -1,7 +1,7 @@
 modifyNcdfAddDim <- function(
-##title<< Add a new dimension to some or more variables in a ncdf file
-        file.con.orig          ##<< a NetCDF object pointing to the respective ncdf file FROM which to copy
-        , file.con.copy        ##<< a NetCDF object pointing to the respective ncdf file TO which to copy
+##title<< Add a new dimension to one or more variables in a netCDF file
+        file.con.orig          ##<< a NetCDF object pointing to the respective netCDF file FROM which to copy
+        , file.con.copy        ##<< a NetCDF object pointing to the respective netCDF file TO which to copy
         , var.name = 'Default' ##<< character vector: names of the variables to which a dimension should be added. Defaults to
                                ##   all except those with identical names as dimensions in file.con.orig (coordinate variables)
         , dim.name = 'new.dim' ##<< character string: name of the dimension to add
@@ -13,8 +13,8 @@ modifyNcdfAddDim <- function(
                                ##   the new dimension and the remaining values left empty (NaN).
 )
   ##description<<
-  ## Adds another dimension to specified variables in a ncdf file and saves the results in
-  ## another ncdf file
+  ## Adds another dimension to specified variables in a netCDF file and saves the results in
+  ## another netCDF file.
   ##seealso<< 
   ##\code{\link{modifyNcdfCopyMetadata}}, \code{\link[RNetCDF]{att.copy.nc}},
   ## \code{\link{modifyNcdfCopyVar}}
@@ -46,7 +46,7 @@ modifyNcdfAddDim <- function(
     var.name    <- sort(var.name)
     vars.orig   <- infoNcdfVars(file.con.orig)[match(var.name, infoNcdfVars(file.con.orig)$name), ]
     for (i in 1:length(var.name)) {
-        print(paste('Add ncdf dimension: Processing variable ', i, ' of ', length(var.name), ' : ', var.name[i], sep=''))
+        print(paste('Add netCDF dimension: Processing variable ', i, ' of ', length(var.name), ' : ', var.name[i], sep=''))
         vars.orig.dims.t <- var.inq.nc(file.con.orig, var.name[i])$dimids
         vars.copy.dims.t <- c(vars.orig.dims.t, id.new.dim)
         var.def.nc(file.con.copy, vars.orig[i, 'name'], vars.orig[i,'type'], vars.copy.dims.t)

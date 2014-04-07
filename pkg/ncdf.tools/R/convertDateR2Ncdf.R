@@ -1,15 +1,15 @@
 convertDateR2Ncdf = function(
-##title<< convert time vectors in ncdf files to Julian days since the start of Gregorian calendar   
-##description<< This function automatically converts time vectors in ncdf files to a standardized Gregorian calendar
-       ncdf.obj              ##<< character string or ncdf connection: ncdf file for which to convert the dates    
+##title<< Convert time vectors in netCDF files to Julian days since a certain origin   
+##description<< This function automatically converts time vectors in netCDF files to a standardized Gregorian calendar
+       ncdf.obj              ##<< character string or netCDF connection: netCDF file for which to convert the dates    
       , date.vec='auto'      ##<< POSIXct vector: date vectors for the time dimension. If set to 'auto', this
-                             ##   is tried to be extracted from the ncdf file
+                             ##   is tried to be extracted from the netCDF file
       , origin="1800-01-01"  ##<< character string: origin to be used for the time vector. This start of the 
                              ##   Gregorian calendar should be kept to avoid possible mistakes due to flawed
                              ##   conversions.
-      , write.to.ncdf = TRUE ##<< logical: whether to write the time vector to the ncdf file.                      
+      , write.to.ncdf = TRUE ##<< logical: whether to write the time vector to the netCDF file.                      
 )
-##details<< This function sets a time vector in a ncdf file to a standardized format which is readable by
+##details<< This function sets a time vector in a netCDF file to a standardized format which is readable by
 ##           most software. It transfers the time vector to days since the start of the Gregorian calendar.
 {
   #check input
@@ -24,20 +24,20 @@ convertDateR2Ncdf = function(
     file.con   = open.nc(ncdf.obj,write=TRUE)
   }
   if (!is.element('time',infoNcdfDims(file.con)$name))
-    stop('No time dimension present in specified ncdf file.')
+    stop('No time dimension present in specified netCDF file.')
 
   # determine date vector
   if (class(date.vec) ==  "character"  && date.vec=='auto') {
     units = infoNcdfAtts(file.con, 'time')[ , 'value'][infoNcdfAtts(file.con, 'time')[, 'name'] == 'units']
     orig.test <- try({as.POSIXct(as.POSIXlt(sub('^.*since ', '', units), tz = 'UTC'))}, silent=TRUE)
     if ((class(orig.test)=='try-error') || !(sub(' since.*$','',units)=='days'))
-      stop('date format in ncdf file is in a non implemented format. Supply date vector by hand.')
+      stop('date format in netCDF file is in a non implemented format. Supply date vector by hand.')
     date.vec.conv <- as.numeric(var.get.nc(file.con,'time') + julian(orig.test,as.POSIXct(origin)))
   } else {
     date.vec.conv <- as.numeric(julian(date.vec, origin = as.POSIXlt(origin, tz="UTC")))
   }   
 
-  ## write results to ncdf file
+  ## write results to netCDF file
   if (write.to.ncdf) {
     if (!is.element('time',infoNcdfVars(file.con)$name))
       var.def.nc(file.con,'time', 'NC_float', 'time')    

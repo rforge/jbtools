@@ -1,7 +1,7 @@
 \name{createLatLongTime}
 \alias{createLatLongTime}
-\title{create empty lat/lon/time ncdf file}
-\description{this function creates an empty standardized latitude/longitude/time ncdf file.}
+\title{Create empty lat/lon/time netCDF file}
+\description{this function creates an empty standardized latitude/longitude/time netCDF file.}
 \usage{createLatLongTime(file.name, var.names = sub("[.]nc", "", file.name), 
     lat.values = c(), long.values = c(), time.values = c(), add.dims = list(), 
     lat.length = length(lat.values), long.length = length(long.values), 

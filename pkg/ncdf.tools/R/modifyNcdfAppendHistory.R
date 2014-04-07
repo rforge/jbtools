@@ -1,11 +1,11 @@
 modifyNcdfAppendHistory = function(
-    ##title<< automatically append string to ncdf history
+    ##title<< Append a string to netCDF history
     file ##<< character sting or RNetCDF file connection: file to write to.
 , string ##<< character string: string to append to the history
 )
   ##description<<
   ## Convenience function to append a string together with the date and the user
-  ## to the history attribute of an Ncdf file. 
+  ## to the history attribute of an NetCDF file. 
   {
    if (class(file) == 'character') {
      con <- open.nc(file, write = TRUE)

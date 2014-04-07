@@ -1,10 +1,10 @@
 \name{readNcdfCoordinates}
 \alias{readNcdfCoordinates}
-\title{read coordinate or dimension values from ncdf file}
-\description{This function reads the coordinate values from a ncdf file.}
+\title{Read coordinate or dimension values from netCDF file}
+\description{This function reads the coordinate values from a netCDF file.}
 \usage{readNcdfCoordinates(fileCon)}\arguments{
-  \item{fileCon}{ncdf file connection or character string: Connection to the
-ncdf file or its file name. In the latter case, the connection is
+  \item{fileCon}{netCDF file connection or character string: Connection to the
+netCDF file or its file name. In the latter case, the connection is
 created and closed automatically.}
 }
 

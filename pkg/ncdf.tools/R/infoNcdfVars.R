@@ -1,6 +1,6 @@
 infoNcdfVars <- function(
-##title<<  display information about all variables in ncdf file
-  file.con            ##<< a NetCDF object pointing to the respective ncdf file.
+##title<< Display information about all variables in netCDF file
+  file.con            ##<< a NetCDF object pointing to the respective netCDF file.
   , order.var = c('id', 'name')[2] ##<< character vector: 
                       ##   Whether to sort the variables according to their name (default) or id.
   , info.ext = FALSE  ##<< logical: whether to compute ranges/means etc. for the variables.
@@ -9,7 +9,7 @@ infoNcdfVars <- function(
   
 )
   ##description<< This function returns different summary information about all variables
-  ##              in a NCDF file.
+  ##              in a netCDF file.
   ##seealso<<
   ##\code{\link{infoNcdfDims}}, \code{\link{infoNcdfAtts}}
 {

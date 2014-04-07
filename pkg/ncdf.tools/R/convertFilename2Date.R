@@ -1,11 +1,12 @@
 convertFilename2Date <- function(
-  ##title<< convert file name to R date
+  ##title<< Convert file name patterns to R date object
     file.names        ##<< character vector: names of the files
     , fun.extr.string ##<< function
     , fun.conv.string ##<< function
   )
 ##description<<
-## This function converts parts of ncdf file names to date strings. This is used, e.g.
+## This function converts parts of netCDF file names to date strings (in case the
+## file name contains date information). This is used, e.g.
 ## in transNcdfCutFiles.   
 ##seealso<<
 ##\code{\link{transNcdfCutFiles}}  

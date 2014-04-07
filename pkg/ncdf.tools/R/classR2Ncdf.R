@@ -2,10 +2,10 @@ classR2Ncdf = function(
  object ##<< object which class should be determined
 )
 ##title<<
-## transfers R classes to ncdf classes
+## transfers R classes to netCDF classes
 
 ##description<<
-## Crudely determines the ncdf class from R classes. Only integer, character
+## Crudely determines the netCDF class from R classes. Only integer, character
 ## and double are implemented yet.
 
 ##seealso<<
@@ -21,6 +21,6 @@ classR2Ncdf = function(
     } else {
         ncdf.class     <- 'NC_CHAR'
     }
-    ##value<< character string: ncdf class used in the RNetCDF package.
+    ##value<< character string: netCDF class used in the RNetCDF package.
     return(ncdf.class)
 }

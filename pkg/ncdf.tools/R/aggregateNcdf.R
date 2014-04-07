@@ -1,12 +1,12 @@
 aggregateNcdf <- function(
-  ##title<< aggregate data in ncdf files
+  ##title<< Aggregate data in netCDF files
   fileName ##<< character vector: names of the files to aggregate.
   , path.out = getwd() ##<< character: path to save the results files to. 
   , period ##<< integer or one of hour, day, month or year: period to aggregate to. In case
            ##   of an integer value, the unit is time steps.
   )
   ##description<<
-  ## This function aggregates time periods in ncdf files. Basically it is just a
+  ## This function aggregates time periods in netCDF files. Basically it is just a
   ## wrapper around the respective cdo function.
 {
 

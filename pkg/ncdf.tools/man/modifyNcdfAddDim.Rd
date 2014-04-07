@@ -1,13 +1,13 @@
 \name{modifyNcdfAddDim}
 \alias{modifyNcdfAddDim}
-\title{Add a new dimension to some or more variables in a ncdf file}
-\description{Adds another dimension to specified variables in a ncdf file and saves the results in
-another ncdf file}
+\title{Add a new dimension to one or more variables in a netCDF file}
+\description{Adds another dimension to specified variables in a netCDF file and saves the results in
+another netCDF file.}
 \usage{modifyNcdfAddDim(file.con.orig, file.con.copy, var.name = "Default", 
     dim.name = "new.dim", dim.values = c(), dim.length = length(dim.values), 
     dim.pos.copy = 1)}\arguments{
-  \item{file.con.orig}{a NetCDF object pointing to the respective ncdf file FROM which to copy}
-  \item{file.con.copy}{a NetCDF object pointing to the respective ncdf file TO which to copy}
+  \item{file.con.orig}{a NetCDF object pointing to the respective netCDF file FROM which to copy}
+  \item{file.con.copy}{a NetCDF object pointing to the respective netCDF file TO which to copy}
   \item{var.name}{character vector: names of the variables to which a dimension should be added. Defaults to
 all except those with identical names as dimensions in file.con.orig (coordinate variables)}
   \item{dim.name}{character string: name of the dimension to add}

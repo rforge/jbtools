@@ -1,7 +1,7 @@
 \name{aggregateNcdf}
 \alias{aggregateNcdf}
-\title{aggregate data in ncdf files}
-\description{This function aggregates time periods in ncdf files. Basically it is just a
+\title{Aggregate data in netCDF files}
+\description{This function aggregates time periods in netCDF files. Basically it is just a
 wrapper around the respective cdo function.}
 \usage{aggregateNcdf(fileName, path.out = getwd(), period)}\arguments{
   \item{fileName}{character vector: names of the files to aggregate.}

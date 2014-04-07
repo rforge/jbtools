@@ -1,18 +1,18 @@
 modifyNcdfCopyVar <- function(
-##title<< copy variable values between ncdf files
-##description<< Copies all values of one variable from one ncdf file to another ncdf file and
-## takes care of dimensions etc.
-    file.con.orig        ##<< a NetCDF object pointing to the original ncdf file FROM which to copy the variable.
-    , file.con.copy = file.con.orig     ##<< a NetCDF object pointing to the ncdf file TO which to copy the variable.
-    , var.id.orig                      ##<< character string or ncdf variable id: The name or id of the variable to copy from.
-    , var.id.copy = var.id.orig        ##<< character string or ncdf variable id: The name or id of the variable to copy to.
+##title<< Copy variable values between netCDF files
+##description<< modifyNcdfCopyVar copies all values of one variable from one netCDF file to another netCDF file and
+## takes care of dimensions etc. .
+    file.con.orig        ##<< a NetCDF object pointing to the original netCDF file FROM which to copy the variable.
+    , file.con.copy = file.con.orig     ##<< a NetCDF object pointing to the netCDF file TO which to copy the variable.
+    , var.id.orig                      ##<< character string or netCDF variable id: The name or id of the variable to copy from.
+    , var.id.copy = var.id.orig        ##<< character string or netCDF variable id: The name or id of the variable to copy to.
     )
 ##details<<
 ## Two cases are implemented: 
 ##
 ##Case 1: copy of one variable and attributes from one file to another file:
 ##The dimensions of the variable to copy have to be also existent (i.e. dimensions with the
-##same name (not necessarily id)) in the ncdf file to which the variable
+##same name (not necessarily id)) in the netCDF file to which the variable
 ##should be copied. In addition these dimensions have to have the same sizes.
 ##
 ##Case 2: copy of one variable to another one (of different name) in the same file.

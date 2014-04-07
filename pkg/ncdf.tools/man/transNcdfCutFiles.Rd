@@ -1,8 +1,8 @@
 \name{transNcdfCutFiles}
 \alias{transNcdfCutFiles}
-\title{cut margins of ncdf files}
+\title{Cut margins of netCDF files}
 \description{Convenience wrapper around cdo to cut outer (time) margins 
-of Ncdf files.}
+of NetCDF files.}
 \usage{transNcdfCutFiles(file.names, time.range.out = c(), time.range.file = c(), 
     fun.start = c(), fun.end = c(), format = "", convert = function(x) chron(paste(x, 
         "15", sep = ""), format = "ymd", out.format = "d-m-y"))}\arguments{

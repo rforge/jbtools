@@ -1,10 +1,10 @@
 infoNcdfAtts <- function(
-  ##title<< return a summary of all ncdf variable attributes
-   file.con   ##<< a NetCDF object pointing to the respective ncdf file.
+  ##title<< Print a summary of all netCDF variable attributes
+   file.con   ##<< a NetCDF object pointing to the respective netCDF file.
    , var.id ='NC_GLOBAL'  ##<< the name or id of the variable for which to display attributes.
 )
   ##description<< This function returns a summary of all attributes of a single variable
-  ## in a ncdf file
+  ## in a netCDF file. 
   ##details<<
   ## If an id or variable name is given for 'var.id ', attributes from one variable are returned.
   ## Global attributes are returned if 'NC_GLOBAL' is given. 

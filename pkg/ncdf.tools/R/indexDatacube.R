@@ -1,21 +1,23 @@
 indexDatacube = function(
-##title<< create logical index matrices for multidimensional datacubes
+##title<< Create logical index matrices for multidimensional datacubes
   datacube = c() ##<< array: datacube from which to extract the sub-parts
                  ##   datacube and dims.datacube should be supplied.
   , logical.ind  ##<< logical array: TRUE/FALSE index matrix for a subset of the 
-                 ##   dimensions of datacube. The size of logical.ind`s dimensions 
+                 ##   dimensions of the datacube. The size of logical.ind`s dimensions 
                  ##   has to match the sizes of the corresponding dimensions in 
                  ##   datacube.
   , dims='auto'  ##<< integer vector or 'auto' : indices of the dimensions in 
                  ##   datacube corresponding to the dimensions of logical.ind. 
                  ##   If set to 'auto' this matching is tried to be accomplished 
                  ##   by comparing the sizes of the dimensions of the two objects.
-  , dims.datacube = dim(datacube) ##<< integer vector: dimensions of datacube. Only one of
+  , dims.datacube = dim(datacube) ##<< integer vector: dimensions of the datacube. Only one of
                  ##   dims.datacube or datacube should be supplied!
              
 )
-  ##description<< This function facilitates supplying logical index array for some 
+  ##description<< This function facilitates supplying logical index array for only some but not all 
   ##              of the dimensions of a data array. This mimics Matlabs indexing scheme.
+  ##              The indexing mechanisms of R only allow supplying logical indices for all
+  ##              dimensions.
 {
   if (sum(logical.ind) == 0) 
     stop('No TRUE value in index matrix!')

@@ -1,5 +1,5 @@
 createStdNcdfFile <- function(
-  ##title<< create an empty ncdf file with standardized attributes and dimensions
+  ##title<< Create an empty netCDF file with standardized attributes and dimensions
     var.names            ##<< character string: name of the target variable in the file
     , file.name = c()    ##<< character string: name of the file. If not given, this
                          ##   is determined automatically in a standardized way from 
@@ -25,10 +25,10 @@ createStdNcdfFile <- function(
                              ##   for copying attributes to the new file.
     , data = c()     
 )
-##description<< This function writes an empty ncdf file with variable names, dimensions and
+##description<< This function writes an empty netCDF file with variable names, dimensions and
 ##              attributes formatted in a standardized way.
 {
-  #copy attributes etc from other ncdf file (if chosen)
+  #copy attributes etc from other netCDF file (if chosen)
   if (class(con.atts) == 'NetCDF') {
     atts.file <- infoNcdfAtts(con.atts, readNcdfVarName(con.atts))
     pars = c('units', 'scale_factor', 'add_offset', 'missing_value')

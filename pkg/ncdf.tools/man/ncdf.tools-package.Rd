@@ -2,18 +2,18 @@
 \alias{ncdf.tools-package}
 \alias{ncdf.tools}
 \docType{package}
-\title{Easy ncdf file handling}
+\title{Easier ncdf file handling}
 \description{Set of tools to simplify the handling of ncdf files with the RNetCDF package.
-Most functions are wrappers for basic functions from RNetCDF to run combinations of these
+Most functions are wrappers for basic functions from RNetCDF to easily run combinations of these
 functions for frequently encountered tasks.}
 \details{
 \tabular{ll}{Package: \tab ncdf.tools\cr
-Title: \tab Easy ncdf file handling\cr
-Version: \tab 0.7.0.289\cr
+Title: \tab Easier ncdf file handling\cr
+Version: \tab 0.7.1.290\cr
 Date: \tab 2014-01-01\cr
 Author: \tab Jannis v. Buttlar\cr
 Maintainer: \tab Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>\cr
-Imports: \tab RNetCDF, chron, foreach, doMC, abind, plotrix, raster, RColorBrewer, JBTools\cr
+Imports: \tab RNetCDF, chron, parallel, abind, plotrix, raster, RColorBrewer, JBTools\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yesf\cr
 Depends: \tab R (>= 2.10.0)\cr}

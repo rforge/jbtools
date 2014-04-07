@@ -1,5 +1,5 @@
 checkNcdfFile <- function(
-##title<< check ncdf file for consistency with CF/COARDS/MDI ncdf conventions
+##title<< check netCDF file for consistency with CF/COARDS/BGI netCDF conventions
   file.name     ##<<character string: file name to check
   , dims = c('longitude', 'latitude', 'time') ##<< vector of strings:
                 ## names of the dimensions which need to be in the file.
@@ -11,8 +11,8 @@ checkNcdfFile <- function(
                 ## is used to infer the name of the variable in the target file
                 ## which will then be checked,
 )
-  ##description<< This function checks whether a ncdf file is consistent with the parts of the COARDS/CF
-  ##              ncdf conventions that the MDI group agreed on.
+  ##description<< This function checks whether a netCDF file is consistent with the parts of the COARDS/CF
+  ##              netCDF conventions used in the BGI department (MPI for Biogeochemistry,  Jena,  Germany).
 {
   con.check     <- open.nc(file.name)
 

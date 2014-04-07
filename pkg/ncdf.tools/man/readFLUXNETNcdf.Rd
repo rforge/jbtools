@@ -1,7 +1,7 @@
 \name{readFLUXNETNcdf}
 \alias{readFLUXNETNcdf}
-\title{read data from FLUXNET Ncdf file.}
-\description{This function reads data from standard FLUXNET ncdf files and returns it in
+\title{read data from FLUXNET NetCDF file.}
+\description{This function reads data from standard (BGI - Jena) FLUXNET netCDF files and returns it in
 an R object.}
 \usage{readFLUXNETNcdf(path = getwd(), sites, pars = "all", time.ends, 
     dim.borders = list(1))}\arguments{

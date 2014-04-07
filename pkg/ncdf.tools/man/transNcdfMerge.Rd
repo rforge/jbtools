@@ -1,7 +1,7 @@
 \name{transNcdfMerge}
 \alias{transNcdfMerge}
-\title{merge several ncdf files}
-\description{Convenience wrapper around cdo to merge several ncdf files containing
+\title{Merge several netCDF files}
+\description{transNcdfMerge is a convenience wrapper around cdo to merge several netCDF files containing
 subsequent time steps into one continuous file.}
 \usage{transNcdfMerge(file.names, name.change = function(x) return(x), 
     time.diff = NULL, fun.start = NULL, fun.end = NULL, time.range.out = c(), 
