@@ -1,8 +1,10 @@
 \name{gapfillNcdf}
 \alias{gapfillNcdf}
-\title{fill gaps in time series or spatial fields inside a ncdf file using SSA.}
-\description{Wrapper function to automatically fill gaps in series or spatial fields inside a ncdf file and save the results
-to another ncdf file.}
+\title{Fill gaps in time series or spatial fields inside a netCDF file using SSA.}
+\description{Wrapper function to automatically fill gaps in series or spatial fields
+inside a ncdf file and save the results to another ncdf file. In addition,
+the function implements the spatio - temporal gap filling algorithm
+of Buttlar et. al (2014).}
 \usage{gapfillNcdf(amnt.artgaps = rep(list(rep(list(c(0.05, 0.05)), 
     times = length(dimensions[[1]]))), times = length(dimensions)), 
     amnt.iters = rep(list(rep(list(c(10, 10)), times = length(dimensions[[1]]))), 
@@ -11,9 +13,7 @@ to another ncdf file.}
     calc.parallel = TRUE, debugging = FALSE, dimensions = list(list("time")), 
     file.name, first.guess = "mean", force.all.dims = FALSE, 
     gaps.cv = 0, keep.steps = TRUE, M, max.cores = 8, max.steps = 10, 
-    MSSA = rep(list(rep(list(FALSE), times = length(dimensions[[1]]))), 
-        times = length(dimensions)), MSSA.blck.trsh = tresh.fill[[1]][[1]], 
-    MSSA.blocksize = 1, n.comp = lapply(amnt.iters, FUN = function(x) x[[1]][[1]][1] * 
+    n.comp = lapply(amnt.iters, FUN = function(x) x[[1]][[1]][1] * 
         2), ocean.mask = c(), pad.series = rep(list(rep(list(c(0, 
         0)), times = length(dimensions[[1]]))), times = length(dimensions)), 
     print.status = TRUE, process.cells = c("gappy", "all")[1], 
@@ -21,9 +21,9 @@ to another ncdf file.}
     ratio.test = 1, reproducible = FALSE, size.biggap = rep(list(rep(list(20), 
         times = length(dimensions[[1]]))), times = length(dimensions)), 
     tresh.const = 1e-12, tresh.converged = 0, tresh.fill = c(list(list(0.1)), 
-        rep(list(list(0, 0)), length(dimensions) - 1)), tresh.fill.first = list(tresh.fill[[1]]), 
-    var.names = "auto", ...)}
-\arguments{
+        rep(list(list(0,
+ 0)), length(dimensions) - 1)), tresh.fill.first = list(tresh.fill[[1]]), 
+    var.names = "auto", ...)}\arguments{
   \item{amnt.artgaps}{list of numeric vectors:
 The relative ratio (length gaps/series length) of
 artificial gaps to include in the "innermost" SSA loop (e.g. the value used by the
@@ -36,8 +36,8 @@ loop (c(outer,inner)) (see ?gapfillSSA for details)}
 index of the iteration to start with (outer, inner). If this
 value is >1, the reconstruction (!) part is started with this iteration. Currently
 it is only possible to set this to values >1 if amnt.artgaps and size.biggap == 0.}
-  \item{calc.parallel}{logical: whether to use parallel computing. Needs packages doMC, foreach or doSMP (and
-their dependencies) to be installed.                                  }
+  \item{calc.parallel}{logical:  whether to use parallel computing. Needs the packages doMC and foreach
+to be installed.                                  }
   \item{debugging}{logical: if set to TRUE, debugging workspaces or dumpframes are saved at several stages
 in case of an error.                                  }
   \item{dimensions}{list of string vectors:
@@ -61,12 +61,6 @@ cross validation loop that are used for cross validation.}
 given,  a default value of 0.5*length(time series) is computed.                                                               }
   \item{max.cores}{integer: maximum number of cores to use (if calc.parallel = TRUE).}
   \item{max.steps}{integer: maximum amount of steps in the variances scheme}
-  \item{MSSA}{list of logical values:
-Whether to perform MSSA for this dimension (see description 
-for details). Has to have the same ind.extr e structure as dimensions.}
-  \item{MSSA.blck.trsh}{numeric:
-ratio (0-1) of gaps that a MSSA block may contain to be filled.                                   }
-  \item{MSSA.blocksize}{integer: size of the quadratic block used for MSSA.}
   \item{n.comp}{list of single integers:
 amount of eigentriples to extract (default (if no values are
 supplied) is 2*amnt.iters[1] (see ?gapfillSSA for details)}
@@ -119,7 +113,9 @@ error is produced here in cases where more than one such variable exists.}
 }
 \details{This is a wrapper function to automatically load, gapfill and save a ncdf file using SSA. It facilitates
 parallel computing and uses the gapfillSSA() function from the package spectral.methods. Refer to
-the documentation of gapfillSSA() for details of the calculations and the necessary parameters.
+the documentation of gapfillSSA() for details of the calculations and the necessary parameters. In
+addition,  the spatio -  temporal scheme of Buttlar et al. (2014) which iterates
+between 1D and spatial 2D SSA is implemented.
 
 
 dimensions:
@@ -160,7 +156,7 @@ be guaranteed under circumstances with more dimensions.
 
 Parallel computing:
 If calc.parallel==TRUE, single time series are filled with parallel computing. This requires
-the package doSMP or doMP, respectively,  (and their dependencies) to be installed on the computer.
+the package doMC (and its dependencies) to be installed on the computer.
 Parallelization with other packages is theoretically possible but not yet implemented. If
 multiple cores are not available, setting calc.parallel to FALSE will cause the process to be
 calculated sequential without these dependencies. The package foreach is needed in all cases.}
@@ -182,6 +178,8 @@ TODO remove first guess stuff
 TODO incorporate non convergence information in final datacube
 TODO facilitate easy run of different settings (e.g. with different default settings)
 TODO switch off "force.all.dims" in case of non necessity
+TODO delete/modify MSSA stuff
+obsolete MSSA stuff  
 start parallel processing workers
 insert gaps for cross validation      
 determine different iteration control parameters
@@ -201,7 +199,9 @@ check what happens if gapfillSSA stops further iterations due to limiting groups
 save process convergence information
 save results 
 delete first guess files}
-
+\references{v. Buttlar, J., Zscheischler, J., and Mahecha, M. D. (2014): An extended approach for
+spatiotemporal gapfilling: dealing with large and systematic gaps in geoscientific
+datasets, Nonlin. Processes Geophys., 21, 203-215, doi:10.5194/npg-21-203-2014                       }
 \author{Jannis v. Buttlar}
 
 

@@ -1,7 +1,7 @@
 \name{gapfillSSA}
 \alias{gapfillSSA}
-\title{Fill gaps in series with SSA}
-\description{Applies the iterative gap filling procedure proposed by Kondrashov and Ghil
+\title{Fill gaps in a vector (time-series) with SSA}
+\description{gapfillSSA applies the iterative gap filling procedure proposed by Kondrashov and Ghil
 (2006) in a fast and optimized way developed by Korobeneykov
 (2009). Generally spoken, major periodic components of the time series are
 determined and interpolated into gap positions. An iterative cross validation
@@ -16,8 +16,7 @@ scheme with artificial gaps is used to determine these periodic components.}
     remove.infinite = FALSE, scale.recstr = TRUE, series, seed = integer(), 
     size.biggap = 20, SSA.methods = c("nutrlan", "propack", "eigen", 
         "svd"), tresh.convergence = 0.01, tresh.min.length = 5, 
-    z.trans.series = TRUE)}
-\arguments{
+    z.trans.series = TRUE)}\arguments{
   \item{amnt.artgaps}{numeric vector: The relative ratio (amount gaps/series length) of
 artificial gaps to include to determine the iteration with the best
 prediction (c(ratio big gaps, ratio small gaps)). If this is set to

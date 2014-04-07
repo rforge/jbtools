@@ -2,8 +2,7 @@
 \alias{rbindMod}
 \title{helper function for gapfillNcdf}
 \description{###############  combine data from foreach iteration ########################}
-\usage{rbindMod(...)}
-\arguments{
+\usage{rbindMod(...)}\arguments{
   \item{\dots}{
 }
 }

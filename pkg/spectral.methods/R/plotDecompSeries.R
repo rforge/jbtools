@@ -1,5 +1,5 @@
 plotDecompSeries <- function(
-  ##title<< visualize/plot an overview of a SSA decomposed ncdf file.
+  ##title<< Visualize/plot an overview of a SSA decomposed ncdf file.
   file.orig                ##<< object to plot: file name or file.con object linking
                            ##   to the original ncdf file
   , file.decomp = sub('[.]nc', '_specdecomp.nc', file.orig) ##<< object to plot:

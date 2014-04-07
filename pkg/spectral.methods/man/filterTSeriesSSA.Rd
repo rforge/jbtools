@@ -1,21 +1,21 @@
 \name{filterTSeriesSSA}
 \alias{filterTSeriesSSA}
-\title{Decompose time series into spectral bands}
-\description{This function decomposes a time series in a set of orthogonal
-series with variance on different timescales. It uses the fast and optimized
-Singular Spectrum Analysis (SSA) method of Korobeneykov (2009).}
+\title{Decompose a vector (i.e. time series) into spectral bands}
+\description{This function decomposes (or filters) a time series into a set of orthogonal (i.e. additive)
+components with variance on different and distinct timescales (i.e. within different bands).
+It uses the fast and optimized  Singular Spectrum Analysis (SSA) method of Korobeneykov (2013).}
 \usage{filterTSeriesSSA(series, borders.wl, M = rep(floor(length(series)/3), 
     times = n.steps), n.comp = rep(40, times = n.steps), harmonics = rep(0, 
     times = n.steps), tolerance.harmonics = 0.05, var.thresh.ratio = 0.005, 
     grouping = c("clusterify", "nearest_neigh")[1], repeat.extr = rep(1, 
         times = length(borders.wl)), recstr.type = "subtraction", 
     pad.series = c(0, 0), SSA.methods = c("nutrlan", "propack", 
-        "eigen", "svd"), center.series = TRUE, call.freq = quote(calcFrequency(series.t)), 
+        "eigen",
+ "svd"), center.series = TRUE, call.freq = quote(calcFrequency(series.t)), 
     n.steps = switch(class(borders.wl), list = length(borders.wl), 
         dim(borders.wl)[2]), plot.spectra = FALSE, second.axis = TRUE, 
     open.plot = TRUE, print.stat = TRUE, xlim = c(), debugging = FALSE, 
-    ...)}
-\arguments{
+    ...)}\arguments{
   \item{series}{numeric vector: Input time series (no gaps!)}
   \item{borders.wl}{list of numeric vectors: Borders of the different periodicity
 bands to extract. Units are the sampling frequency of the series
@@ -87,7 +87,7 @@ a possible error in the settings, data or code.}
 }
 \details{Purpose
 The function is based on "singular spectrum analysis" (SSA) (Golyandina et al. [2001])
-based on the Rssa package (Korobeynikov [2010]).}
+based on the Rssa package (Korobeynikov (2013)).}
 \value{list with components
 \item{dec.series}{numeric matrix: decomposed timeseries. Each row of this
 matrix contains one spectrally filtered component. There
@@ -97,8 +97,8 @@ defined. }
 (second column) period borders of each filtered component.
 The rows here correspond to the rows in "dec.series".}
 \item{settings}{list: Settings used to perform the calculation.}}
-\references{Korobeneykov, A. (2010), Computation- and Space-Efficient Implementation of SSA,
-Statistics and Its Interface, 3, 357-368
+\references{Golyandina, N. & Korobeynikov, A. (2013), 'Basic Singular Spectrum Analysis
+and forecasting with R', Computational Statistics & Data Analysis.
 Golyandina, N.; Nekrutkin, V.; Nekrutkin, V. & Zhigljavsky, A. (2001),
 Analysis of time series structure: SSA and related techniques, CRC Press}
 \author{Jannis v. Buttlar}

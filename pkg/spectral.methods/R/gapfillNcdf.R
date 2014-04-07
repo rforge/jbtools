@@ -1,7 +1,9 @@
 gapfillNcdf <- structure(function(
-##title<< fill gaps in time series or spatial fields inside a ncdf file using SSA.
-##description<< Wrapper function to automatically fill gaps in series or spatial fields inside a ncdf file and save the results
-##              to another ncdf file.
+##title<< Fill gaps in time series or spatial fields inside a netCDF file using SSA.
+##description<< Wrapper function to automatically fill gaps in series or spatial fields
+##              inside a ncdf file and save the results to another ncdf file. In addition,
+##              the function implements the spatio - temporal gap filling algorithm
+##              of Buttlar et. al (2014).
 amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1]]))) , times = length(dimensions)) ##<< list of numeric vectors: 
                       ##             The relative ratio (length gaps/series length) of
                       ##             artificial gaps to include in the "innermost" SSA loop (e.g. the value used by the
@@ -14,8 +16,8 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                       ##             index of the iteration to start with (outer, inner). If this
                       ##             value is >1, the reconstruction (!) part is started with this iteration. Currently
                       ##             it is only possible to set this to values >1 if amnt.artgaps and size.biggap == 0.
-, calc.parallel = TRUE##<< logical: whether to use parallel computing. Needs packages doMC, foreach or doSMP (and
-                      ##             their dependencies) to be installed.                                  
+, calc.parallel = TRUE##<< logical:  whether to use parallel computing. Needs the packages doMC and foreach
+                      ##             to be installed.                                  
 , debugging = FALSE   ##<< logical: if set to TRUE, debugging workspaces or dumpframes are saved at several stages
                       ##            in case of an error.                                  
 , dimensions = list(list('time'))    ##<< list of string vectors: 
@@ -39,12 +41,6 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                       ##             given,  a default value of 0.5*length(time series) is computed.                                                               
 , max.cores = 8       ##<< integer: maximum number of cores to use (if calc.parallel = TRUE).                                  
 , max.steps = 10      ##<< integer: maximum amount of steps in the variances scheme                                 
-, MSSA =  rep(list(   rep(list(FALSE), times = length(dimensions[[1]]))) , times = length(dimensions)) ##<< list of logical values: 
-                      ##             Whether to perform MSSA for this dimension (see description 
-                      ##             for details). Has to have the same ind.extr e structure as dimensions.
-, MSSA.blck.trsh = tresh.fill[[1]][[1]] ##<< numeric: 
-                      ##             ratio (0-1) of gaps that a MSSA block may contain to be filled.                                   
-, MSSA.blocksize = 1  ##<< integer: size of the quadratic block used for MSSA.  
 , n.comp = lapply(amnt.iters, FUN = function(x)x[[1]][[1]][1] * 2) ##<< list of single integers: 
                       ##             amount of eigentriples to extract (default (if no values are
                       ##             supplied) is 2*amnt.iters[1] (see ?gapfillSSA for details)
@@ -99,7 +95,9 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 ##details<<
 ## This is a wrapper function to automatically load, gapfill and save a ncdf file using SSA. It facilitates
 ## parallel computing and uses the gapfillSSA() function from the package spectral.methods. Refer to
-## the documentation of gapfillSSA() for details of the calculations and the necessary parameters.
+## the documentation of gapfillSSA() for details of the calculations and the necessary parameters. In
+## addition,  the spatio -  temporal scheme of Buttlar et al. (2014) which iterates
+## between 1D and spatial 2D SSA is implemented.
 ##
 ##
 ## dimensions:
@@ -140,11 +138,16 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 ##
 ## Parallel computing:
 ## If calc.parallel==TRUE, single time series are filled with parallel computing. This requires
-## the package doSMP or doMP, respectively,  (and their dependencies) to be installed on the computer.
+## the package doMC (and its dependencies) to be installed on the computer.
 ## Parallelization with other packages is theoretically possible but not yet implemented. If
 ## multiple cores are not available, setting calc.parallel to FALSE will cause the process to be
 ## calculated sequential without these dependencies. The package foreach is needed in all cases.
 
+
+##references<<
+## v. Buttlar, J., Zscheischler, J., and Mahecha, M. D. (2014): An extended approach for
+## spatiotemporal gapfilling: dealing with large and systematic gaps in geoscientific
+## datasets, Nonlin. Processes Geophys., 21, 203-215, doi:10.5194/npg-21-203-2014                       
 ##seealso<<
 ##\code{\link[Rssa]{ssa}}, \code{\link[spectral.methods]{gapfillSSA}}, \code{\link{decomposeNcdf}}
 
@@ -170,6 +173,12 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
     ##TODO incorporate non convergence information in final datacube
     ##TODO facilitate easy run of different settings (e.g. with different default settings)
     ##TODO switch off "force.all.dims" in case of non necessity
+    ##TODO delete/modify MSSA stuff
+
+    ##obsolete MSSA stuff  
+    MSSA =  rep(list(   rep(list(FALSE), times = length(dimensions[[1]]))) , times = length(dimensions)) 
+    MSSA.blck.trsh = tresh.fill[[1]][[1]]                                    
+    MSSA.blocksize = 1 
 
     #save argument values of call
     printStatus(paste('Filling file', file.name))

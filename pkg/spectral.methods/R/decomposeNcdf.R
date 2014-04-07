@@ -1,5 +1,5 @@
 decomposeNcdf = structure(function(
-    ##title<< spectral decomposition of time series inside a ncdf file.
+    ##title<< Spectrally decompose all time series in a netCDF datacube
   file.name             ##<< character: name of the ncdf file to decompose. The file has to be in the current working directory!
   , borders.wl          ##<< list: borders of the different periodicity bands to extract. Units are
                         ##   sampling frequency of the series. In case of monthly data border.wl<- list(c(11, 13))

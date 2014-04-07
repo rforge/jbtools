@@ -1,5 +1,5 @@
 filterTSeriesSSA <- structure(function(
-##title<< Decompose time series into spectral bands
+##title<< Decompose a vector (i.e. time series) into spectral bands
 series                      ##<< numeric vector: Input time series (no gaps!)
 , borders.wl                ##<< list of numeric vectors: Borders of the different periodicity
                             ## bands to extract. Units are the sampling frequency of the series
@@ -71,14 +71,14 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 )
                               
 ##description<<
-## This function decomposes a time series in a set of orthogonal
-## series with variance on different timescales. It uses the fast and optimized
-## Singular Spectrum Analysis (SSA) method of Korobeneykov (2009).
+## This function decomposes (or filters) a time series into a set of orthogonal (i.e. additive)
+## components with variance on different and distinct timescales (i.e. within different bands).
+## It uses the fast and optimized  Singular Spectrum Analysis (SSA) method of Korobeneykov (2013).
 
 ##details<<
 ## Purpose
 ## The function is based on "singular spectrum analysis" (SSA) (Golyandina et al. [2001])
-## based on the Rssa package (Korobeynikov [2010]).
+## based on the Rssa package (Korobeynikov (2013)).
 
 ## Definition of the period borders (borders.wl):
 ## borders.wl contains the borders of the different periodicity bands to
@@ -150,8 +150,8 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 ## the background represent a Fourier Spectrum of the original series.
 
 ##references<<
-## Korobeneykov, A. (2010), Computation- and Space-Efficient Implementation of SSA,
-## Statistics and Its Interface, 3, 357-368
+## Golyandina, N. & Korobeynikov, A. (2013), 'Basic Singular Spectrum Analysis
+## and forecasting with R', Computational Statistics & Data Analysis.
 ## Golyandina, N.; Nekrutkin, V.; Nekrutkin, V. & Zhigljavsky, A. (2001),
 ## Analysis of time series structure: SSA and related techniques, CRC Press
 

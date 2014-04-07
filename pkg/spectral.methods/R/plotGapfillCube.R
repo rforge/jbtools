@@ -1,27 +1,28 @@
 plotGapfillCube <- function(
-  ##title<< visualize/plot an overview of a SSA gapfilled ncdf file.
+  ##title<< Plot an overview of a the results of a SSA gapfilling (from a ncdf file).
   file.orig                ##<< object to plot: file name or file.con object linking to the original (unfilled) ncdf file
   , file.filled = sub('[.]nc', '_gapfill.nc', file.orig)           ##<< object to plot: file name or file.con object linking to the filled ncdf file
   , file.prefill = ''      ##<< object to plot: file name or file.con object linking to the prefilled ncdf file                      
-  , data.orig = c()        ##<< array: data (see above). can be transferred to prevent reloading
-                           ##   huge datacubes.
+  , data.orig = c()        ##<< array: data (see file.orig). Can be supplied to prevent
+                           ##          the reloading of huge datacubes.
   , data.filled = c()      ##<< see data.orig
   , data.prefill = c()     ##<< see data.orig                
   , n.series = 16          ##<< integer: how many example series to plot
   , lwd = 2                ##<< graphical parameter, see ?par
-  , max.cores = 36         ##<< integer: amount of cores to use for parallelized computations.
+  , max.cores = 1          ##<< integer: amount of cores to use for parallelized computations.
   , ...
   )
   ##description<<
-  ## This function plots some overview statistics of a ncdf file.
+  ## This function plots some overview statistics of the results of a gapfilling
+  ## (i.e. the results of a call to gapfillNcdf) .
   ##\if{html}{\out{<img src="../doc/visualize_ncdf_demo.png" alt="image ..visualize_ncdf_demo should be here"/>}}\ifelse{latex}{}{}
 {
   ##TODO facilitate datacube input
-  ##TODO include plotNLines capabilites
+  ##TODO include plotNLines capabilities
   
   ## preparation
   Sys.setenv(R_PARALLEL_PORT =  sample(49152:65535, 1))
-  cl <- makeCluster(cpus = min(c(detectCores(), max.cores)), type = 'SOCK')    
+  cl <- makeCluster(min(c(detectCores(), max.cores)))    
   con.orig   <- open.nc(file.orig)
   con.filled <- open.nc(file.filled)
   var.filled <- readNcdfVarName(file.filled)
@@ -37,7 +38,7 @@ plotGapfillCube <- function(
     data.filled <-  transNcdfRotate(data.object = con.filled, var.name = var.filled)  
   }
   if (length(data.prefill) == 0 & nchar(file.prefill)!=0) {
-    cat('Loading pregapfilled data ...\n')
+    cat('Loading pre-gapfilled data ...\n')
     con.prefill  <- open.nc(file.prefill)
     var.prefill  <- readNcdfVarName(file.prefill)
     data.prefill <-  transNcdfRotate(data.object = con.prefill, var.name = var.prefill)  

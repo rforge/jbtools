@@ -1,6 +1,6 @@
 \name{decomposeNcdf}
 \alias{decomposeNcdf}
-\title{spectral decomposition of time series inside a ncdf file.}
+\title{Spectrally decompose all time series in a netCDF datacube}
 \description{Wrapper function to automatically decompose gridded time series inside a ncdf file and save the results
 to another ncdf file using SSA.
 }
@@ -8,8 +8,7 @@ to another ncdf file using SSA.
     check.files = TRUE, debugging = FALSE, harmonics = c(), M = c(), 
     max.cores = 16, n.comp = c(), pad.series = c(0, 0), print.status = TRUE, 
     ratio.const = 0.05, repeat.extr = rep(1, times = length(borders.wl)), 
-    tresh.const = 1e-12, var.names = "auto", ...)}
-\arguments{
+    tresh.const = 1e-12, var.names = "auto", ...)}\arguments{
   \item{file.name}{character: name of the ncdf file to decompose. The file has to be in the current working directory!}
   \item{borders.wl}{list: borders of the different periodicity bands to extract. Units are
 sampling frequency of the series. In case of monthly data border.wl<- list(c(11, 13))

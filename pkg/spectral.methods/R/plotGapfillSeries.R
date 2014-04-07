@@ -1,16 +1,21 @@
 plotGapfillSeries <- function(
-  ##title<< visualize/plot an overview of a SSA gapfilled ncdf file.
+  ##title<< Plot an overview of a the results of a SSA gapfilling (from a ncdf file)
   file.orig                ##<< object to plot: file name or file.con object linking to a ncdf file
   , file.filled = sub('[.]nc', '_gapfill.nc', file.orig) ##<< character string: name of the
                            ##   filled file.
   , data.orig = c()        ##<< array: Unfilled data. Can be supplied to prevent loading
-                           ##   the data from a ncdf file again.    
+                           ##   the data from a ncdf file again. This is read from
+                           ##   'file.filled' if no value is given.
   , data.filled = c()      ##<< array: Filled data. Can be supplied to prevent loading
-                           ##   the data from a ncdf file again.   
+                           ##   the data from a ncdf file again. This is read from
+                           ##   'file.filled' if no value is given.  
   , ...
 )
   ##description<<
-  ## This function plots some overview statistics of a ncdf file.
+  ## This function plots some overview statistics of the results of a gapfilling run
+  ## in a netCDF file,  i.e. the results of a call to gapfillNcdf().
+  ##seealso<<
+  ##\code{\link{gapfillSSA}}, \code{\link{gapfillNcdf}}
   ##\if{html}{\out{<img src="../doc/visualize_ncdf_demo.png" alt="image ..visualize_ncdf_demo should be here"/>}}\ifelse{latex}{}{}
 {
   ##TODO facilitate datacube input

@@ -1,5 +1,5 @@
 plotDecomposition = function(
-  ##title<< visualize decomposition results
+  ##title<< Plot the results of a SSA decomposition
   decomp.results    ##<< list: object to plot: results from a call to filterTSeriesSSA
    ,time.vector=c() ##<< R Date/time object: optional time vector used to label x axes.
    , n.magnif=3     ##<< amount of positions where to plot the different magnifications.

@@ -17,5 +17,5 @@ import(foreach)
 import(parallel)
 importFrom(DistributionUtils, logHist)
 importFrom(RColorBrewer, brewer.pal)
-import(doMC)
+
 

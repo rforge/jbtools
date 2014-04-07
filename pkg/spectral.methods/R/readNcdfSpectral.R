@@ -1,6 +1,6 @@
 readNcdfSpectral <- function(
-  ##title<< read spectrally saved Ncdf data
-  fileName       ##<< character string: name of the ncdf file
+  ##title<< Read the results of a spectral decomposition (from a netCDF file)
+  fileName       ##<< character string: name of the netCDF file
   , varName      ##<< character string: name of the variable to extract.
   , rangeBandsGet##<< vector: Vector defining the bands to extract. Can be either
                  ##   logical with one TRUE/FALSE per band in the file or a numeric
@@ -8,7 +8,7 @@ readNcdfSpectral <- function(
                  ##   border.
   )
   ##description<<
-  ## Read spectrally saved ncdf data (i.e. the output of a call to decomposeNcdf).
+  ## readNcdfSpectral reads spectrally decomposed ncdf data (i.e. the output of a call to decomposeNcdf).
 {
   .funSum    <- function(x) {
     xUse <- x[bandsTake]

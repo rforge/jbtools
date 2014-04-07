@@ -1,10 +1,10 @@
 calcFrequency = function(
-##title<< determine frequency of time series
-        series                             ##<< numeric vector: input time series
+##title<< Estimate the frequency of a periodic signal
+        series                             ##<< numeric vector: input vector (time series)
         , plot.periodogram = FALSE         ##<< logical: whether to plot a periodogram
 )
   ##description<<
-  ##Function to determine the "main" frequency of a time series.
+  ##Function to estimate the "main" frequency of a periodic time series.
   ##details<<
   ##This function uses Fourier decomposition to determine the 'major' frequency of a time
   ##series. Technically this is the frequency of the Fourier component with the highest
@@ -33,6 +33,6 @@ calcFrequency = function(
         mtext(side = 3, 'period', line = 2)
     }
 
-    ##value<< frequency of the Fourier component with the highest variance [1/time steps].
+    ##value<< Frequency of the Fourier component with the highest variance [1/time steps]
     return(frequency.main)
 }

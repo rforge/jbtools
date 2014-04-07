@@ -1,5 +1,5 @@
 gapfillSSA <- structure(function(
-##title<< Fill gaps in series with SSA
+##title<< Fill gaps in a vector (time-series) with SSA
     amnt.artgaps = c(0.05, 0.05)     ##<< numeric vector: The relative ratio (amount gaps/series length) of
                                      ##   artificial gaps to include to determine the iteration with the best
                                      ##   prediction (c(ratio big gaps, ratio small gaps)). If this is set to
@@ -69,7 +69,7 @@ gapfillSSA <- structure(function(
                                      ##   the calculation.  
 )
 ##description<<
-## Applies the iterative gap filling procedure proposed by Kondrashov and Ghil
+## gapfillSSA applies the iterative gap filling procedure proposed by Kondrashov and Ghil
 ## (2006) in a fast and optimized way developed by Korobeneykov
 ## (2009). Generally spoken, major periodic components of the time series are
 ## determined and interpolated into gap positions. An iterative cross validation

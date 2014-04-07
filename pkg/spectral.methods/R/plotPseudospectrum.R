@@ -1,17 +1,17 @@
 plotPseudospectrum = function(
-  ##title<< plot and calculate pseudospectrum of spectrally decomposed SSA eigentriples
+  ##title<< Plot and calculate the pseudospectrum of spectrally decomposed SSA eigentriples
   ssa.object            ##<< SSA object: the results of a run of ssa().
   ,calc.raw.SSA = TRUE  ##<< logical: Whether to additionally compute the whole spectrum for
-                        ##   all ungrouped eigentriples (my slow the process in case of
+                        ##   all un-grouped eigentriples (my slow the process in case of
                         ##   long time series.
   ,plot.spectrum = TRUE ##<< logical: whether to plot the pseudospectrum.
   ,plot.fourier = TRUE  ##<< logical: Whether to plot the Fourier spectrum in the background.
-  ,series.orig = c()    ##<< numeric vector: original, undecomposed time series
+  ,series.orig = c()    ##<< numeric vector: original, non decomposed time series
                         ##   (used to calculate Fourier spectrum). If not supplied,
                         ##   an object with the saved in ssa.object is searched for in
                         ##   all active environments.
-  ,pch = 16             ##<< integer: graphic parameter passed to the plot()
-  ,col = 'red'          ##<< character: graphic parameter passed to the plot()
+  ,pch = 16             ##<< integer: graphic parameter passed to plot() (?par)
+  ,col = 'red'          ##<< character: graphic parameter passed to plot() (?par)
   ,show.harmonies = TRUE##<< logical: whether to mark the positions of the harmonies of the oscillation
                         ##   with the highest variance.
   ,label.points = TRUE  ##<< logical: whether to label the points with period values
@@ -28,8 +28,6 @@ plotPseudospectrum = function(
   ## be used to compute the frequency, variance and period of all SSA eigentriples.
   ##seealso<<
   ## \code{\link[Rssa]{ssa}}
-  ##author<<
-  ## Jannis v. Buttlar, MPI BGC Jena, Germany, jbuttlar@bgc-jena.mpg.de
 {
   ## check input
   if (!inherits(ssa.object, 'ssa'))
