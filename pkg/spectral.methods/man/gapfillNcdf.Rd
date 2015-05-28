@@ -2,28 +2,27 @@
 \alias{gapfillNcdf}
 \title{Fill gaps in time series or spatial fields inside a netCDF file using SSA.}
 \description{Wrapper function to automatically fill gaps in series or spatial fields
-inside a ncdf file and save the results to another ncdf file. In addition,
-the function implements the spatio - temporal gap filling algorithm
+inside a ncdf file and save the results to another ncdf file. This can
+be done via 1D,  2D or the spatio - temporal gap 3D filling algorithm
 of Buttlar et. al (2014).}
 \usage{gapfillNcdf(amnt.artgaps = rep(list(rep(list(c(0.05, 0.05)), 
     times = length(dimensions[[1]]))), times = length(dimensions)), 
     amnt.iters = rep(list(rep(list(c(10, 10)), times = length(dimensions[[1]]))), 
         times = length(dimensions)), amnt.iters.start = rep(list(rep(list(c(1, 
         1)), times = length(dimensions[[1]]))), times = length(dimensions)), 
-    calc.parallel = TRUE, debugging = FALSE, dimensions = list(list("time")), 
-    file.name, first.guess = "mean", force.all.dims = FALSE, 
-    gaps.cv = 0, keep.steps = TRUE, M, max.cores = 8, max.steps = 10, 
-    n.comp = lapply(amnt.iters, FUN = function(x) x[[1]][[1]][1] * 
-        2), ocean.mask = c(), pad.series = rep(list(rep(list(c(0, 
-        0)), times = length(dimensions[[1]]))), times = length(dimensions)), 
-    print.status = TRUE, process.cells = c("gappy", "all")[1], 
-    process.type = c("stepwise", "variances")[1], ratio.const = 0.05, 
-    ratio.test = 1, reproducible = FALSE, size.biggap = rep(list(rep(list(20), 
-        times = length(dimensions[[1]]))), times = length(dimensions)), 
-    tresh.const = 1e-12, tresh.converged = 0, tresh.fill = c(list(list(0.1)), 
-        rep(list(list(0,
- 0)), length(dimensions) - 1)), tresh.fill.first = list(tresh.fill[[1]]), 
-    var.names = "auto", ...)}\arguments{
+    calc.parallel = TRUE, debugging = FALSE, debugging.SSA = FALSE, 
+    dimensions = list(list("time")), file.name, first.guess = "mean", 
+    force.all.dims = FALSE, gaps.cv = 0, keep.steps = TRUE, M, 
+    max.cores = 8, max.steps = 10, n.comp = lapply(amnt.iters, 
+        FUN = function(x) x[[1]][[1]][1] * 2), ocean.mask = c(), 
+    pad.series = rep(list(rep(list(c(0, 0)), times = length(dimensions[[1]]))), 
+        times = length(dimensions)), print.status = TRUE, process.cells = c("gappy", 
+        "all")[1], process.type = c("stepwise", "variances")[1], 
+    ratio.const = 0.05, ratio.test = 1, reproducible = FALSE, 
+    size.biggap = rep(list(rep(list(20), times = length(dimensions[[1]]))), 
+        times = length(dimensions)), tresh.const = 1e-12, tresh.converged = 0, 
+    tresh.fill = 0.1, var.names = "auto", ...)}
+\arguments{
   \item{amnt.artgaps}{list of numeric vectors:
 The relative ratio (length gaps/series length) of
 artificial gaps to include in the "innermost" SSA loop (e.g. the value used by the
@@ -39,7 +38,9 @@ it is only possible to set this to values >1 if amnt.artgaps and size.biggap == 
   \item{calc.parallel}{logical:  whether to use parallel computing. Needs the packages doMC and foreach
 to be installed.                                  }
   \item{debugging}{logical: if set to TRUE, debugging workspaces or dumpframes are saved at several stages
-in case of an error.                                  }
+in case of an error.}
+  \item{debugging.SSA}{
+}
   \item{dimensions}{list of string vectors:
 setting along which dimensions to perform SSA. These names
 have to be identical to the names of the dimensions in the ncdf file. Set this to
@@ -94,7 +95,7 @@ length of the big artificial gaps (in time steps) (see ?gapfillSSA for details)}
 from the decomposition.}
   \item{tresh.converged}{numeric: ratio (0-1): determines the amount of SSA iterations that have to converge so that no error
 is produced.}
-  \item{tresh.fill}{list of numeric fractions (0-1):
+  \item{tresh.fill}{numeric fraction (0-1):
 This value determines the fraction of valid values below which
 series/grids will not be filled in this step and are filled with the first guess from the
 previous step (if any). For filling global maps while using a ocean.mask you need
@@ -103,64 +104,71 @@ value to zero would mean that also slices/series without any "real" values are t
 be filled with the "first guess" value of the last iteration alone. This can only be done
 if the cross validation scheme is switched off (e.g. by setting amnt.artgaps and size.biggap
 to zero.}
-  \item{tresh.fill.first}{single numeric value between 0 and 1 indicating a different threshold for the
-run when no first guess values from previous runs are available. As this can be specified anyway
-in the 'stepwise' sheme, supplying this value is only reasonable in the 'variances' sheme.}
   \item{var.names}{character string: name of the variable to fill. If set to 'auto' (default), the name
 is taken from the file as the variable with a different name than the dimensions. An
 error is produced here in cases where more than one such variable exists.}
   \item{\dots}{further settings to be passed to gapfillSSA}
 }
-\details{This is a wrapper function to automatically load, gapfill and save a ncdf file using SSA. It facilitates
-parallel computing and uses the gapfillSSA() function from the package spectral.methods. Refer to
-the documentation of gapfillSSA() for details of the calculations and the necessary parameters. In
-addition,  the spatio -  temporal scheme of Buttlar et al. (2014) which iterates
-between 1D and spatial 2D SSA is implemented.
-
+\details{This is a wrapper function to automatically load, gapfill and save a ncdf file using SSA.
+Basically it automatically runs gapfillSSA (see also its documentation) for all                         
+time series or grids in a ncdf file automatically. Theoretically and  
+conceptionally all methods could also be applied to simple datacubes (i.e. R arrays) 
+and not only ncdf files. However,  this has not yet been implemented. The values
+for several function arguments have to be supplied as rather complicated nested lists                         
+to facilitate the usage of different values per step (see 'stepwise calculation' for details)
 
 dimensions:
-It is generally possible to perform one or two dimensional SSA for gap filling. The gapfillSSA
-algorithm automatically determines the right mode depending on whether a vector or a matrix is supplied.
-In this function 'dimensions' is used to determine this. If only one dimension name is supplied, only
-vectors in the direction of this dimension are extracted and filled. If two dimension names are supplied,
-spatial grid/matrices along these dimension are extracted and SSA is computed two dimensionally.
-The vectors/matrices are automatically distributed evenly amongst all cores (if calc.parallel==TRUE) amongst
-the remaining dimensions in the ncdf file. The input ncdf file has to contain a maximum of 3 dimensions.
-
+It is generally possible to perform one,  two,  or spatiotemporal 3D SSA
+(as in Buttlar et al (2014)) for gap filling.  This is set by using the argument
+'dimensions'. If only one string corresponding to a dimension name in the target
+ncdf file is supplied, only  vectors in the direction of this dimension are
+extracted and filled. If two dimension names are supplied,
+matrices  (i.e. spatial grids) along these dimension are extracted and 2D SSA
+is computed. To start the 3D spatio - temporal scheme (Buttlar et.al (2014)) which
+iterates between 1D temporal and 2D spatial SSA,  set
+dimensions = list(list("time", c("longitude","latitude"))). 
 
 stepwise calculation:
-The algorithm can be run step wise with different settings for each step where the results from each
-step can be used as 'first guesses' for the subsequent step. To do this, amnt.artgaps, size.biggap, amnt.iters,
-n.comp, M, tresh.fill and dimensions have to be lists with their respective values for each step as their elements.
-One example for such an application would be spatio-temporal gap filling, where spatial SSA is used first
-and the results are then used as first guesses in the gap places for a subsequent temporal gap filling. For such
-a procedure dimensions has to be: list(a=c('longitude','latitude'),'time')).
+The algorithm can be run step wise with different settings for each step
+where the results from each step can be used as 'first guesses' for the subsequent
+step. To do this, amnt.artgaps, size.biggap, amnt.iters, n.comp, M, tresh.fill
+and dimensions have to be supplied as lists. For each nth iteration step the
+values of the corresponding nth list element will be used. At each of these
+nth iteration steps, several repetitions with different dimensions are possible
+(as is the case with the 3D spatiotemporal scheme). To facilitate this, the 
+individual list elements at each step have to be lists containing the different
+dimension names. As a consequence, all these arguments have to be nested lists.
+This is the case also if only one dimension is used (i.e. to do only temporal
+1D SSA,  dimensions = list(list('time')).
+One example for an application where supplying different settings for all these
+steps would be user defined spatio-temporal gap filling. This allows to clearly
+define which dimension (and M, gap amount etc) to use at each step of the
+process. On the contrary,  the spatiotemporal gapfilling method applied by
+Buttlar et. al. (2014) uses identical settings for each (outer loop)
+iteration step and automatically determines which dimension to use. For
+this procedure the first list element of dimensions (and the other stepwise
+arguments) is recycled during each step. Hence, a list of only length one has
+to be supplied (dimensions = list(list(c('longitude','latitude'),'time')) )
+(see details for dimensions above).
 
 
 NCDF file specifications:
-Due to limitations in the file size the ncdf file can only contain one variable (and the dimensional
+Due to limitations in the file size, the ncdf file has to contain one variable (and the dimensional
 coordinate variables) (for the time being). This function will
 create a second ncdf file identical to the input file but with an additional variable called 'flag.orig',
-which contains zero for . In general the file is internally split into
-individual time series or grids along ALL dimensions other than those specified in 'dimensions'.
-These are individually filled and finally combined, transposed and saved in the new file.
-
-The NCDF file may contain NaN values at grid locations where no data is available (e.g. ocean tiles).
-These grid cells are excluded from the calculation prior to gap filling. To distinguish "valid" grid
-cells from empty cells, values from all grid cells for the first time step are extracted and slices
-with missing values are excluded from the analysis.
-
+which contains zero for gapfilled values and 1 for not filled values.
 The function has only been tested with ncdf files with two spatial dimensions (e.g. lat and long) and
 one time dimension. Even though it was programmed to be more flexible, its functionality can not
-be guaranteed under circumstances with more dimensions.
+be guaranteed under circumstances with more dimensions.                         
 
-Parallel computing:
-If calc.parallel==TRUE, single time series are filled with parallel computing. This requires
-the package doMC (and its dependencies) to be installed on the computer.
-Parallelization with other packages is theoretically possible but not yet implemented. If
-multiple cores are not available, setting calc.parallel to FALSE will cause the process to be
-calculated sequential without these dependencies. The package foreach is needed in all cases.}
+non fillable gid cells:
+Using the 3D method would result in a completely filled datacube. To prevent
+the filling of grid cells where no reasonable guess via the gapfilling may be
+achieved (i.e. ocean grid cells in the case of terrestrial data), a matrix
+indicating these grid cells can be supplied (see 'ocean.mask')
+}
 \value{Nothing is returned but a ncdf file with the results is written.
+TODO remove aperm steps
 TODO extract iloop convergence information for all loops
 TODO test inner loop convergence scheme for scenarios 
 TODO indicate fraction of gaps for each time series
@@ -237,7 +245,6 @@ datasets, Nonlin. Processes Geophys., 21, 203-215, doi:10.5194/npg-21-203-2014  
     amnt.artgaps     = list(list(c(0,0)), list(c(0,0)), list(c(0,0)))
     size.biggap      = list(list(0),      list(0),      list(0))
     n.comp           = list(list(6),      list(6),      list(6))
-    tresh.fill       = list(list(.2),     list(.2),     list(.2))
     M                = list(list(12),     list(12),     list(12))
     process.type     = 'stepwise'
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, amnt.iters = amnt.iters, 
@@ -253,7 +260,6 @@ datasets, Nonlin. Processes Geophys., 21, 203-215, doi:10.5194/npg-21-203-2014  
     amnt.artgaps     = list(list(c(0,0)), list(c(0,0)), list(c(0,0)), list(c(0,0)))
     size.biggap      = list(list(0),      list(0), list(0),      list(0))
     n.comp           = list(list(15),     list(15), list(15),     list(15))
-    tresh.fill       = list(list(.2),     list(0), list(0),     list(0))
     M                = list(list(23),     list(c(20,20)), list(23), list(c(20,20)))
     process.type     = 'stepwise'
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, 
@@ -268,7 +274,6 @@ datasets, Nonlin. Processes Geophys., 21, 203-215, doi:10.5194/npg-21-203-2014  
     amnt.artgaps     = list(list(c(0,0), c(0,0)))
     size.biggap      = list(list(0,      0))
     process.type     = 'variances'
-    tresh.fill       = list(list(0.1,    0.1))
     max.steps        = 2
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, n.comp = n.comp, 
 #                tresh.fill = tresh.fill, max.steps = max.steps, M = M, 

@@ -51,7 +51,7 @@ transNcdfSubset <- function(
   
 
   # load, transpose and subset source data
-  data.orig   <- transNcdfRotate(con.source)
+  data.orig   <- transNcdfRotate(con.source)$data
   close.nc(con.source)
   data.target <- array(data.orig[indexDimVecs2Matrix(dim.indices$latitudes,
                                                       dim.indices$longitudes,

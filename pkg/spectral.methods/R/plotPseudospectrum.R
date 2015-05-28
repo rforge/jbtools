@@ -64,7 +64,7 @@ plotPseudospectrum = function(
   ## group eigentriples
   if (print.stat)
     printStatus('Grouping eigentriples.')
-  pairs.ssa          <- clusterify(ssa.object)
+  pairs.ssa          <- grouping.auto(ssa.object)
 
   ## reconstruct grouped triples
   if (print.stat)

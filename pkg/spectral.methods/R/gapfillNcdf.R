@@ -1,8 +1,8 @@
 gapfillNcdf <- structure(function(
 ##title<< Fill gaps in time series or spatial fields inside a netCDF file using SSA.
 ##description<< Wrapper function to automatically fill gaps in series or spatial fields
-##              inside a ncdf file and save the results to another ncdf file. In addition,
-##              the function implements the spatio - temporal gap filling algorithm
+##              inside a ncdf file and save the results to another ncdf file. This can
+##              be done via 1D,  2D or the spatio - temporal gap 3D filling algorithm
 ##              of Buttlar et. al (2014).
 amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1]]))) , times = length(dimensions)) ##<< list of numeric vectors: 
                       ##             The relative ratio (length gaps/series length) of
@@ -19,7 +19,8 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 , calc.parallel = TRUE##<< logical:  whether to use parallel computing. Needs the packages doMC and foreach
                       ##             to be installed.                                  
 , debugging = FALSE   ##<< logical: if set to TRUE, debugging workspaces or dumpframes are saved at several stages
-                      ##            in case of an error.                                  
+                      ##            in case of an error.
+,  debugging.SSA =  FALSE
 , dimensions = list(list('time'))    ##<< list of string vectors: 
                       ##             setting along which dimensions to perform SSA. These names
                       ##             have to be identical to the names of the dimensions in the ncdf file. Set this to
@@ -61,7 +62,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                       ##             understanding of the results trajectory to the final results.                                  
 , process.type = c('stepwise', 'variances')[1] ##character string<< Use 'stepwise' to stepwise fill using one dimension setting
                       ##             and 'variances' to alternate between different dimension settings using the one with
-                      ##             the lowest residual variance to proceed. 
+                      ##             the lowest residual variance to proceed (e.g. for the so called spatiotemporal 3D scheme). 
 , ratio.const = 0.05  ##<< numeric: max ratio of the time series that is allowed to be above tresh.const for the time series
                       ##             still to be not considered constant.                                 
 , ratio.test = 1      ##<< numeric: ratio (0-1) of the data that should be used in the cross validation step. If set to 1,
@@ -75,7 +76,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                       ##             from the decomposition.
 , tresh.converged = 0 ##<< numeric: ratio (0-1): determines the amount of SSA iterations that have to converge so that no error
                       ##             is produced.
-, tresh.fill = c(list(list(0.1)), rep(list(list(0,0)), length(dimensions) - 1)) ##<< list of numeric fractions (0-1):
+, tresh.fill = 0.1     ##<< numeric fraction (0-1):
                       ##             This value determines the fraction of valid values below which
                       ##             series/grids will not be filled in this step and are filled with the first guess from the
                       ##             previous step (if any). For filling global maps while using a ocean.mask you need
@@ -84,57 +85,71 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                       ##             be filled with the "first guess" value of the last iteration alone. This can only be done
                       ##             if the cross validation scheme is switched off (e.g. by setting amnt.artgaps and size.biggap
                       ##             to zero.
-, tresh.fill.first = list(tresh.fill[[1]]) ##<< single numeric value between 0 and 1 indicating a different threshold for the
-                      ##             run when no first guess values from previous runs are available. As this can be specified anyway
-                      ##             in the 'stepwise' sheme, supplying this value is only reasonable in the 'variances' sheme.
 , var.names = 'auto'  ##<< character string: name of the variable to fill. If set to 'auto' (default), the name
                       ##             is taken from the file as the variable with a different name than the dimensions. An
                       ##             error is produced here in cases where more than one such variable exists.
 , ...                 ##<< further settings to be passed to gapfillSSA
 )
 ##details<<
-## This is a wrapper function to automatically load, gapfill and save a ncdf file using SSA. It facilitates
-## parallel computing and uses the gapfillSSA() function from the package spectral.methods. Refer to
-## the documentation of gapfillSSA() for details of the calculations and the necessary parameters. In
-## addition,  the spatio -  temporal scheme of Buttlar et al. (2014) which iterates
-## between 1D and spatial 2D SSA is implemented.
-##
-##
+## This is a wrapper function to automatically load, gapfill and save a ncdf file using SSA.
+## Basically it automatically runs gapfillSSA (see also its documentation) for all                         
+## time series or grids in a ncdf file automatically. Theoretically and  
+## conceptionally all methods could also be applied to simple datacubes (i.e. R arrays) 
+## and not only ncdf files. However,  this has not yet been implemented. The values
+## for several function arguments have to be supplied as rather complicated nested lists                         
+## to facilitate the usage of different values per step (see 'stepwise calculation' for details)
+##                         
 ## dimensions:
-## It is generally possible to perform one or two dimensional SSA for gap filling. The gapfillSSA
-## algorithm automatically determines the right mode depending on whether a vector or a matrix is supplied.
-## In this function 'dimensions' is used to determine this. If only one dimension name is supplied, only
-## vectors in the direction of this dimension are extracted and filled. If two dimension names are supplied,
-## spatial grid/matrices along these dimension are extracted and SSA is computed two dimensionally.
-## The vectors/matrices are automatically distributed evenly amongst all cores (if calc.parallel==TRUE) amongst
-## the remaining dimensions in the ncdf file. The input ncdf file has to contain a maximum of 3 dimensions.
-##
+## It is generally possible to perform one,  two,  or spatiotemporal 3D SSA
+## (as in Buttlar et al (2014)) for gap filling.  This is set by using the argument
+## 'dimensions'. If only one string corresponding to a dimension name in the target
+## ncdf file is supplied, only  vectors in the direction of this dimension are
+## extracted and filled. If two dimension names are supplied,
+## matrices  (i.e. spatial grids) along these dimension are extracted and 2D SSA
+## is computed. To start the 3D spatio - temporal scheme (Buttlar et.al (2014)) which
+## iterates between 1D temporal and 2D spatial SSA,  set
+## dimensions = list(list("time", c("longitude","latitude"))). 
 ##
 ## stepwise calculation:
-## The algorithm can be run step wise with different settings for each step where the results from each
-## step can be used as 'first guesses' for the subsequent step. To do this, amnt.artgaps, size.biggap, amnt.iters,
-## n.comp, M, tresh.fill and dimensions have to be lists with their respective values for each step as their elements.
-## One example for such an application would be spatio-temporal gap filling, where spatial SSA is used first
-## and the results are then used as first guesses in the gap places for a subsequent temporal gap filling. For such
-## a procedure dimensions has to be: list(a=c('longitude','latitude'),'time')).
+## The algorithm can be run step wise with different settings for each step
+## where the results from each step can be used as 'first guesses' for the subsequent
+## step. To do this, amnt.artgaps, size.biggap, amnt.iters, n.comp, M, tresh.fill
+## and dimensions have to be supplied as lists. For each nth iteration step the
+## values of the corresponding nth list element will be used. At each of these
+## nth iteration steps, several repetitions with different dimensions are possible
+## (as is the case with the 3D spatiotemporal scheme). To facilitate this, the 
+## individual list elements at each step have to be lists containing the different
+## dimension names. As a consequence, all these arguments have to be nested lists.
+## This is the case also if only one dimension is used (i.e. to do only temporal
+## 1D SSA,  dimensions = list(list('time')).
+## One example for an application where supplying different settings for all these
+## steps would be user defined spatio-temporal gap filling. This allows to clearly
+## define which dimension (and M, gap amount etc) to use at each step of the
+## process. On the contrary,  the spatiotemporal gapfilling method applied by
+## Buttlar et. al. (2014) uses identical settings for each (outer loop)
+## iteration step and automatically determines which dimension to use. For
+## this procedure the first list element of dimensions (and the other stepwise
+## arguments) is recycled during each step. Hence, a list of only length one has
+## to be supplied (dimensions = list(list(c('longitude','latitude'),'time')) )
+## (see details for dimensions above).
 ##
 ##
 ## NCDF file specifications:
-## Due to limitations in the file size the ncdf file can only contain one variable (and the dimensional
+## Due to limitations in the file size, the ncdf file has to contain one variable (and the dimensional
 ## coordinate variables) (for the time being). This function will
 ## create a second ncdf file identical to the input file but with an additional variable called 'flag.orig',
-## which contains zero for . In general the file is internally split into
-## individual time series or grids along ALL dimensions other than those specified in 'dimensions'.
-## These are individually filled and finally combined, transposed and saved in the new file.
-##
-## The NCDF file may contain NaN values at grid locations where no data is available (e.g. ocean tiles).
-## These grid cells are excluded from the calculation prior to gap filling. To distinguish "valid" grid
-## cells from empty cells, values from all grid cells for the first time step are extracted and slices
-## with missing values are excluded from the analysis.
-##
+## which contains zero for gapfilled values and 1 for not filled values.
 ## The function has only been tested with ncdf files with two spatial dimensions (e.g. lat and long) and
 ## one time dimension. Even though it was programmed to be more flexible, its functionality can not
-## be guaranteed under circumstances with more dimensions.
+## be guaranteed under circumstances with more dimensions.                         
+##
+## non fillable gid cells:
+## Using the 3D method would result in a completely filled datacube. To prevent
+## the filling of grid cells where no reasonable guess via the gapfilling may be
+## achieved (i.e. ocean grid cells in the case of terrestrial data), a matrix
+## indicating these grid cells can be supplied (see 'ocean.mask')
+##
+
 ##
 ## Parallel computing:
 ## If calc.parallel==TRUE, single time series are filled with parallel computing. This requires
@@ -156,6 +171,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 ##Nothing is returned but a ncdf file with the results is written.
 ######################################################################################################
 {
+    ##TODO remove aperm steps
     ##TODO extract iloop convergence information for all loops
     ##TODO test inner loop convergence scheme for scenarios 
     ##TODO indicate fraction of gaps for each time series
@@ -177,8 +193,8 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 
     ##obsolete MSSA stuff  
     MSSA =  rep(list(   rep(list(FALSE), times = length(dimensions[[1]]))) , times = length(dimensions)) 
-    MSSA.blck.trsh = tresh.fill[[1]][[1]]                                    
-    MSSA.blocksize = 1 
+    MSSA.blck.trsh = tresh.fill                                    
+    MSSA.blocksize = 1
 
     #save argument values of call
     printStatus(paste('Filling file', file.name))
@@ -203,7 +219,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
     } else {
       seed <- c()
     }
-    
+
     # necessary variables
     if (gaps.cv != 0) {
       processes <- c('cv', 'final')
@@ -211,11 +227,11 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
       processes <- c('final') 
       art.gaps.values            <- NULL            
     }
-    process_converged_detail = list()
+    process.converged.detail = list()
     if (process.type == 'variances') {
       step.chosen         <- matrix(NA, 2, max.steps)
       iter.chosen         <- array(NA, dim=c(3, max.steps, length(processes)))
-      process_converged   <- matrix(NA, length(processes), max.steps)      
+      process.converged   <- matrix(NA, length(processes), max.steps)      
       n.steps             <- max.steps
       var.steps           <- array(NA, dim = c(max.steps, max(unlist(n.comp)), 
                                          length(dimensions[[1]])))
@@ -223,14 +239,14 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
       n.steps             <- length(dimensions)
       step.chosen         <- matrix(NA, 2, n.steps)
       iter.chosen         <- array(NA, dim=c(3, n.steps, length(processes)))
-      process_converged   <- matrix(NA, length(processes), n.steps)      
+      process.converged   <- matrix(NA, length(processes), n.steps)      
       step.chosen[1, ]    <- 1
       step.chosen[2, ]    <- 1:n.steps
     }
     dimnames(step.chosen) <- list(c('dim','step'), paste('step', 1:dim(step.chosen)[2]))
     dimnames(iter.chosen) <- list(c('outer','inner', 'amnt.na'),
                                   paste('step', 1:dim(iter.chosen)[2]), processes)
-    dimnames(process_converged) <- list(processes)
+    dimnames(process.converged) <- list(processes)
 
 
     # debugging and information variables
@@ -252,7 +268,9 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
     if (var.names[1] == 'auto')
       var.names = readNcdfVarName(file.name)
     file.con.orig <- open.nc(file.name)
-    dims.info     <- infoNcdfDims(file.con.orig)
+    dims.info     <- infoNcdfDims(file.con.orig)[pmatch(c('lat', 'lon', 'time'), infoNcdfDims(file.con.orig)$name), ]
+    dims.info$id <- 0:(dim(dims.info)[1] - 1)
+
     
     ## start parallel processing workers
     if (calc.parallel) 
@@ -260,7 +278,10 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
 
     # start loops
     for (var.name in var.names) {
-      datacube         <- var.get.nc(file.con.orig, var.name)
+      result.rotation <-  transNcdfRotate(data.object = file.con.orig,
+                                          var.name =  var.name,  reverse.dim =  FALSE)
+      datacube        <-  result.rotation$data
+      aperm.reverse   <-  result.rotation$aperm.reverse
       if (sum(is.na(datacube)) == 0) {
         print(paste(var.name, 'does not contain gaps. Gap filling for this data omitted!'))
         next
@@ -337,7 +358,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
             for (l in dims.calc) {
               if (g == 2 && step.chosen['dim', h] != l)
                 next
-              tresh.fill.dc         <- tresh.fill[[ind]][[l]]                  
+              tresh.fill.dc         <- tresh.fill
               
               ##prepare parallel iteration parameters
               if (process.type == 'stepwise') {
@@ -345,7 +366,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                 amnt.iters.start.loop <- amnt.iters.start[[h]][[1]]
               } else if (process.type == 'variances') {
                 if (h == 1)
-                  tresh.fill.dc       <- tresh.fill.first[[ind]][[l]]
+                  tresh.fill.dc       <- tresh.fill
                 amnt.iters.loop       <- c(h, amnt.iters[[1]][[l]][2])
                 amnt.iters.start.loop <- c(h, 1)
               }
@@ -384,8 +405,8 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                                    dims.process.length = dims.process.length,
                                    dims.cycle.id = dims.cycle.id,
                                    dims.cycle.length = dims.cycle.length)
-              
               ##determine call settings for SSA
+              iterinf = list(process = process, h = h, g = g, l = l)
               args.call.SSA <- list(amnt.artgaps = amnt.artgaps[[ind]][[l]],
                                     M = M[[ind]][[l]],
                                     size.biggap = size.biggap[[ind]][[l]],
@@ -395,16 +416,18 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                                     amnt.iters.start = amnt.iters.start.loop,
                                     print.stat   = FALSE,
                                     plot.results = FALSE,
-                                    debugging = debugging, seed = seed)
-              data.step <- list(iterinf = list(process = process, h = h, g = g, l = l),
-                                args = args.call.SSA)
+                                    debugging = debugging.SSA, seed = seed,
+                                    iterinf = iterinf)
+              data.step <- list(iterinf = iterinf, args = args.call.SSA)
               args2SSA[[length(args2SSA) + 1]] <- data.step
               
               
               ##get first guess
+              
               if (h > 1 && exists('file.name.guess.next')) {
                 file.con.guess   <- open.nc(file.name.guess.next)
-                first.guess      <- var.get.nc(file.con.guess, var.name)
+                first.guess      <- transNcdfRotate(data.object = file.con.guess,
+                                                    var.name = var.name, reverse.dim =  FALSE)$data
                 close.nc(file.con.guess)
                 iterpath[dim(iterpath)[1], 'fg.filename.nxt'] <- file.name.guess.next
                 iterpath[dim(iterpath)[1], 'fg.used'] <- TRUE            
@@ -430,6 +453,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
                                                        slices.without.gaps = slices.without.gaps))
               }
               gapfill.results   <- do.call(.gapfillNcdfDatacube, args.Datacube)
+              
               gapfill.results   <- c(gapfill.results, diminfo.step)
               if (is.null(gapfill.results$reconstruction) && is.null(gapfill.results$data.variances) &&
                   n.steps == 1) {
@@ -543,9 +567,9 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
             file.name.guess.next   <- paste(sub('.nc$', '', file.name),
                                             '_first_guess_step_', formatC(h + 1, 2, flag = '0'),
                                             '_', process, '.nc', sep = '')
-            file.copy(from = file.name, to = file.name.guess.next)          
+            file.copy(from = file.name, to = file.name.guess.next, overwrite = TRUE)          
             file.con.guess.next    <- open.nc(file.name.guess.next, write = TRUE)
-            var.put.nc(file.con.guess.next, var.name, results.reconstruction)
+            var.put.nc(file.con.guess.next, var.name, aperm(results.reconstruction, perm = aperm.reverse))
             close.nc(file.con.guess.next)
             step.use.frst.guess  <- min(c(h, step.chosen['step', max(which(!is.na(step.chosen['step',])))]))
             
@@ -560,14 +584,14 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
           }
 
           ##save process convergence information
-          if (sum(!is.na(gapfill.results.step$process_converged)) > 0) {
-            process_converged[process, h] <- sum(gapfill.results.step$process_converged, na.rm = TRUE) /
-              sum(!is.na(gapfill.results.step$process_converged))
-            process_converged_detail = c(process_converged_detail,
-              list(array(gapfill.results.step$process_converged, dim = gapfill.results.step$dims.cycle.length)))
+          if (sum(!is.na(gapfill.results.step$process.converged)) > 0) {
+            process.converged[process, h] <- sum(gapfill.results.step$process.converged, na.rm = TRUE) /
+              sum(!is.na(gapfill.results.step$process.converged))
+            process.converged.detail = c(process.converged.detail,
+              list(array(gapfill.results.step$process.converged, dim = gapfill.results.step$dims.cycle.length)))
             name <- paste(process, '/', h, sep = '')
-            names(process_converged_detail)[[length(process_converged_detail)]] <- name
-            if (process_converged[process, h] < tresh.converged) {
+            names(process.converged.detail)[[length(process.converged.detail)]] <- name
+            if (process.converged[process, h] < tresh.converged) {
               stop('More cells have not converged than allowed by tresh.converged!')
             }
           } 
@@ -575,7 +599,7 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
       }
       
       ##save results 
-      .gapfillNcdfSaveResults(args.call.global = args.call.global,
+      .gapfillNcdfSaveResults(aperm.reverse = aperm.reverse, args.call.global = args.call.global,
                              datacube = datacube,
                              dims.cycle.id = gapfill.results.step$dims.cycle.id,
                              drop.dim = drop.dim,
@@ -603,13 +627,13 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
       out  <-list(pred.measures = pred.measures, step.chosen = step.chosen,
                   finished = finished, iterpath = iterpath, included.otherdim = included.otherdim,
                   SSAcallargs = args2SSA, iter.chosen = iter.chosen,
-                  process_converged = process_converged, process_converged_detail =
-                  process_converged_detail, seed = seed)
+                  process.converged = process.converged, process.converged.detail =
+                  process.converged.detail, seed = seed)
     } else {
       out  <- list(finished = finished, args2SSA = args2SSA, iterpath = iterpath,
                    iter.chosen = iter.chosen,
-                   process_converged = process_converged, process_converged_detail =
-                   process_converged_detail, seed = seed)
+                   process.converged = process.converged, process.converged.detail =
+                   process.converged.detail, seed = seed)
     }
     return(out)
   }, ex = function(){
@@ -642,7 +666,6 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
     amnt.artgaps     = list(list(c(0,0)), list(c(0,0)), list(c(0,0)))
     size.biggap      = list(list(0),      list(0),      list(0))
     n.comp           = list(list(6),      list(6),      list(6))
-    tresh.fill       = list(list(.2),     list(.2),     list(.2))
     M                = list(list(12),     list(12),     list(12))
     process.type     = 'stepwise'
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, amnt.iters = amnt.iters, 
@@ -658,7 +681,6 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
     amnt.artgaps     = list(list(c(0,0)), list(c(0,0)), list(c(0,0)), list(c(0,0)))
     size.biggap      = list(list(0),      list(0), list(0),      list(0))
     n.comp           = list(list(15),     list(15), list(15),     list(15))
-    tresh.fill       = list(list(.2),     list(0), list(0),     list(0))
     M                = list(list(23),     list(c(20,20)), list(23), list(c(20,20)))
     process.type     = 'stepwise'
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, 
@@ -673,7 +695,6 @@ amnt.artgaps = rep(list(   rep(list(c(0.05, 0.05)), times = length(dimensions[[1
     amnt.artgaps     = list(list(c(0,0), c(0,0)))
     size.biggap      = list(list(0,      0))
     process.type     = 'variances'
-    tresh.fill       = list(list(0.1,    0.1))
     max.steps        = 2
 #    gapfillNcdf(file.name = file.name, dimensions = dimensions, n.comp = n.comp, 
 #                tresh.fill = tresh.fill, max.steps = max.steps, M = M, 
@@ -684,7 +705,7 @@ globalVariables('i')
 
 
 ##################################### save results #############################
-.gapfillNcdfSaveResults<- function(args.call.global, datacube, dims.cycle.id,
+.gapfillNcdfSaveResults<- function(aperm.reverse, args.call.global, datacube, dims.cycle.id,
                                   drop.dim, file.name, n.steps,
                                   ocean.mask, print.status, process.cells,
                                   reconstruction, slices.without.gaps, var.name,
@@ -709,12 +730,13 @@ globalVariables('i')
       att.put.nc(file.con.copy,  paste(var.create, '_flag_orig', sep =''),'long_name','NC_CHAR',
                  paste('flag indicating original values (1) and filled values (0) in ',
                        var.create, sep = ''))
-      datacubeT                    <- var.get.nc(file.con.copy, var.name)
+      datacubeT                   <- transNcdfRotate(data.object = file.con.copy, var.name = var.name)$data
       data.flag                   <- array(NA, dim = dim(datacubeT))
       data.flag[is.na(datacubeT)]  <- 0
       data.flag[!is.na(datacubeT)] <- 1
-      var.put.nc(file.con.copy, paste(var.name, '_flag_orig', sep =''), data.flag)
-      var.put.nc(file.con.copy, var.name, datacubeT)
+      var.put.nc(file.con.copy, paste(var.name, '_flag_orig', sep =''),
+                 aperm(data.flag,  perm = aperm.reverse))
+      var.put.nc(file.con.copy, var.name, aperm(datacubeT,  perm = aperm.reverse))
     }  
   } else {
      file.con.copy      <- open.nc(con = file.name.copy, write = TRUE)     
@@ -744,7 +766,7 @@ globalVariables('i')
     cat(paste(Sys.time(), ' : Writing results to file. \n', sep = ''))
   if (drop.dim)
     data.results.final <- drop(data.results.final)
-  var.put.nc(file.con.copy, var.name, data.results.final)
+  var.put.nc(file.con.copy, var.name, aperm(data.results.final,  perm = aperm.reverse))
   sync.nc(file.con.copy)
 
   #add attributes with process information to ncdf files
@@ -812,13 +834,14 @@ globalVariables('i')
   slices.without.gaps = results.identify$slices.without.gaps
   slices.excluded = results.identify$slices.excluded
   slices.too.gappy = results.identify$slices.too.gappy
+  args.call.SSA$tresh.min.length =  results.identify$tresh.min.length
   
   #create iterator
   if (sum(slices.process) == 0) {
     data.results.finished <- array(NA, dim(datacube))
     data.variances        <- NULL
     iters.chosen          <- c(NA, NA)
-    process_converged     <- rep(NA, prod(dims.cycle.length))
+    process.converged     <- rep(NA, prod(dims.cycle.length))
   } else {
     results.crtitercube  <- do.call(.gapfillNcdfCreateItercube, 
                                     list(datacube = datacube, 
@@ -860,11 +883,20 @@ globalVariables('i')
                                    dims.cycle.id = dims.cycle.id,  dims.process.length =  dims.process.length, MSSA = MSSA, 
                                    file.name = file.name, reproducible = reproducible)            
      }
+    
     data.results.valid.cells <- results.parallel$reconstruction
     data.variances           <- results.parallel$variances
     iters.chosen             <- results.parallel$iters.chosen
-    process_converged        <- array(NA, dim = dims.cycle.length)
-    process_converged[slices.process]  <- results.parallel$process_converged
+    process.converged        <- array(NA, dim = dims.cycle.length)
+    ## if (interactive()) {
+    ##   #browser()
+    ## } else {
+    ##   path.save = '/Net/Groups/BGI/people/jbuttlar/Scratch'
+    ##   file.save    <- paste('debug_', file.name, '_step_1.RData',  sep = '')
+    ##   printStatus(paste('Saving debugging file to ', file.path(path.save, file.save)))
+    ##   save(list = ls(),  file = file.path(path.save, file.save))
+    ## }
+    process.converged[slices.process]  <- results.parallel$process.converged
 
     #fill all values to results array
     if (print.status)
@@ -890,7 +922,7 @@ globalVariables('i')
               max.cores = max.cores, slices.process = slices.process,
               slices.too.gappy = slices.too.gappy, sices.constant = slices.constant,
               values.constant = values.constant, slices.excluded = slices.excluded,
-              iters.chosen = iters.chosen, process_converged = process_converged))
+              iters.chosen = iters.chosen, process.converged = process.converged))
 }
 
 
@@ -979,23 +1011,33 @@ rbindMod <- function(...)
 ##details<< helper function for gapfillNcdf that combines the foreach output
 ##          in a convenient way.
 {
-    cat(paste(Sys.time(), ' : Assembling data from parallelized computations.\n', 
-        sep=''))
-    assign('dummy', list(...))
-    results <- try({
-      vars.amnt <- dim(dummy[[1]][['variances']])[2]
-      cube.cols <- sum(sapply(dummy,function(x)dim(x[['reconstruction']])[1]))
-      reconstruction <- matrix(unlist(lapply(dummy, function(x)as.vector(t(x[[1]])))),
-                               nrow = cube.cols, byrow = TRUE)
-      variances      <- matrix(unlist(lapply(dummy, function(x)as.vector(t(x[[2]])))),
-                               ncol = vars.amnt, byrow = TRUE)
-      process_converged <- unlist(lapply(dummy, function(x)as.vector(t(x[['process_converged']]))))
-      iters.chosen   <- matrix(unlist(lapply(dummy, function(x)as.vector(t(x[['iters.chosen']])))),
-                               ncol = 2, byrow = TRUE)
-      'finished'
-    })
-    return(list(reconstruction = reconstruction, variances = variances, 
-                process_converged = process_converged, iters.chosen = iters.chosen))    
+  
+  cat(paste(Sys.time(), ' : Assembling data from parallelized computations.\n', 
+            sep=''))
+  assign('dummy', list(...))
+
+
+  path.save = '/Net/Groups/BGI/people/jbuttlar/Scratch'
+  file.save    <- paste('debug_combine_', as.numeric(Sys.time()), '_', sample(1:100, 1), '.RData',  sep = '')
+  printStatus(paste('Saving debugging file to ', file.path(path.save, file.save)))
+  save(dummy,  file = file.path(path.save, file.save))
+  
+
+
+  
+
+  vars.amnt <- dim(dummy[[1]][['variances']])[2]
+  cube.cols <- sum(sapply(dummy,function(x)dim(x[['reconstruction']])[1]))
+  reconstruction <- matrix(unlist(lapply(dummy, function(x)as.vector(t(x[[1]])))),
+                           nrow = cube.cols, byrow = TRUE)
+  variances      <- matrix(unlist(lapply(dummy, function(x)as.vector(t(x[[2]])))),
+                           ncol = vars.amnt, byrow = TRUE)
+  process.converged <- unlist(lapply(dummy, function(x)as.vector(t(x[['process.converged']]))))
+  iters.chosen   <- matrix(unlist(lapply(dummy, function(x)as.vector(t(x[['iters.chosen']])))),
+                           ncol = 2, byrow = TRUE)
+  
+  return(list(reconstruction = reconstruction, variances = variances, 
+              process.converged = process.converged, iters.chosen = iters.chosen))    
 }
 
 
@@ -1009,6 +1051,15 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
 ##details<< helper function for gapfillNcdf performs each individual series/grid 
 ##          extracion and handing it over to gapfillSSA.
 {
+   ## path.save = '/Net/Groups/BGI/people/jbuttlar/Scratch'
+   ## file.save <- file.path(path.save, paste('debug_', file.name, '_SSA_internal_core_single_',
+   ##                                         args.call.SSA$iterinf$process, '_',
+   ##                                         args.call.SSA$iterinf$h,'_', args.call.SSA$iterinf$l, '_', 
+   ##                                          iter.nr, '.RData',  sep = ''))
+   ## printStatus(paste('Saving debugging file to ', file.save))
+   ## save(list = ls(environment()), file = file.save)
+
+  
   #determine iteration parameters
   iter.ind          <- iter.gridind[iter.nr, ]
   datapts.n         <- prod(dim(datacube)[dims.process.id + 1])
@@ -1025,7 +1076,7 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
   # define results and diagnostics arrays
   data.results.iter <- array(NA, dim = c(n.series.core , datapts.n))
   variances         <- array(NA, dim = c(diff(iter.ind) + 1, args.call.SSA[['n.comp']]))
-  process_converged <- array(NA, dim = c(diff(iter.ind) + 1))
+  process.converged <- array(NA, dim = c(diff(iter.ind) + 1))
   iters.chosen      <- array(NA, dim = c(diff(iter.ind) + 1, 2))
   
   for (n in 1:(diff(iter.ind) + 1)) {
@@ -1034,7 +1085,8 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
     data.results.iter.t = try({
 
       ## determine arguments transferred to SSA process
-      args.call.t             <- args.call.SSA 
+      args.call.t             <- args.call.SSA
+      args.call.t$iterinf   =  NULL
       dims.extr.data          <- dims.process.length
       aperm.extr.data         <- 1:(length(dims.process.id) + 1) 
       if (MSSA) {
@@ -1069,7 +1121,7 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
 
       ## run SSA
       series.filled       <- do.call(gapfillSSA, args.call.t)
-
+      
       ## transpose and extract SSA results
       rcstr.local         <- aperm(array(series.filled$reconstr,
                                          dim = c(dims.process.length, n.series.steps[n])),
@@ -1078,10 +1130,12 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
                                                  (sum( n.series.steps[1 : max(c(n - 1, 1))]))))  
       data.results.iter[ind.results, ]  <- array(rcstr.local, dim = c(n.series.steps[n], datapts.n))
       variances[n, 1:length(as.vector(series.filled$variances))] <- as.vector(series.filled$variances)
-      process_converged[n]              <- series.filled$process_converged
+      process.converged[n]              <- series.filled$process.converged
       iters.chosen[n, ]                 <- series.filled$iter.chosen
       'completed'      
     })
+   # browser()
+    
     
     ## save workspace in case of error for debugging
     if (class(data.results.iter.t) == 'try-error') {
@@ -1090,11 +1144,9 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
       data.results.iter.t             <- matrix(Inf, ncol = datapts.n, nrow = 1)
       system.info                     <- sessionInfo()    
       path.file                       <- file.path('/', 'Net', 'Groups', 'BGI', 'tmp', 
-          'jbuttlar', 'Cluster_jobs_debugging', sub('/Net/Groups/BGI/', '', getwd()))
-      if (!file.exists(path.file))  
-        system(paste('mkdir -p ', path.file, sep = ''))     
+                                                   'jbuttlar', 'Cluster_jobs_debugging', getwd()) 
       file.name.t                     <- file.path(path.file, paste('workspace_error_', file.name, '_',
-              iter.nr, '_', n, sep = ''))
+                                                                    iter.nr, '_', n, sep = ''))
       dump.frames(to.file = TRUE, dumpto = file.name.t)
       print(paste('Saved workspace to file ', file.name.t, '.rda', sep = ''))
       stop()
@@ -1107,10 +1159,17 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
         cat(paste(Sys.time(), ' : Finished ~',
                   round(n / (diff(iter.ind) + 1) * 100), '%. \n', sep=''))
   }
+  
 
+
+  
+
+
+
+  
   ## return results
   return(list(reconstruction = data.results.iter, variances = variances, 
-              process_converged = process_converged, iters.chosen = iters.chosen))
+              process.converged = process.converged, iters.chosen = iters.chosen))
 }
 
 #####################       # check input to functions      ####################
@@ -1129,7 +1188,6 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
   # include test for MSSA and windowlength=1
   
   ##TODO
-  #check for tresh.fill.first
   #check input file
   ##TODO add checks
   ## - single dimension variances and thresh.fill.first, tresh.fill
@@ -1150,7 +1208,7 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
   }  
   check.passed <- checkNcdfFile(file.name = args$file.name, 
                                  dims = dims.check, 
-                                 type = 'relaxed') 
+                                 type = 'relaxed')
   if (!check.passed)
     stop('NCDF file not consistent with CF ncdf conventions!')
   file.con.orig <- open.nc(args$file.name)
@@ -1233,10 +1291,23 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
       stop('process.type has to be one of \'stepwise\' or \'variances\'!')
     if (args$max.cores > 1 & !args$calc.parallel)
       stop('More than one core can only be used if calc.parallel==TRUE!')
-    if(all(unlist(c(args$tresh.fill, args$tresh.fill.first)) < 0 | unlist(c(args$tresh.fill, args$tresh.fill.first)) > 1))
-      stop('All values in tresh.fill (and tresh.fill.first) need to be between 0 and 1!')
+    if (!inherits(args$tresh.fill, 'numeric') || length(args$tresh.fill) != 1)
+      stop('Supply argument tresh.fill as object of class numeric and length = 1!')
+    if (args$tresh.fill < 0 | args$tresh.fill > 1)
+      stop('All values in tresh.fill need to be between 0 and 1!')
+
+    dims.order <- c('latitude', 'longitude', 'time')
+    for (i in 1:length(args$dimensions))
+      for (j in 1:length(args$dimensions[[i]])) {
+        dims.check <-  args$dimensions[[i]][[j]]
+        if (length(dims.check) > 1)
+          if (sum(diff(match(args$dimensions[[i]][[j]],  dims.order)) < 0) > 0)
+            stop(paste('Datacube is internally rotated/transposed to the dimension',
+                       'oder: lat/lon/time. Please supply all dim pairs in dimensions',
+                       'in this order (i.e. lat/lon,  lon/time or lat/time.).'))
+      }
     if (args$process.type == 'variances') {
-      args.check <- c('dimensions', 'n.comp', 'M', 'amnt.artgaps', 'size.biggap', 'tresh.fill')
+      args.check <- c('dimensions', 'n.comp', 'M', 'amnt.artgaps', 'size.biggap')
       n.dims     <- length(args$dimensions[[1]])
       for (m in 1:length(args.check)) {
         if (length(args[[args.check[m]]][[1]]) != n.dims)
@@ -1250,7 +1321,7 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
       }
     }  else if (args$process.type == 'stepwise') {
       args.list = c('amnt.artgaps', 'size.biggap', 'n.comp', 'M', 'pad.series', 
-        'tresh.fill', 'amnt.iters', 'amnt.iters.start', 'MSSA')
+         'amnt.iters', 'amnt.iters.start', 'MSSA')
       for (n in 1:length(args.list)) {
         if(class(args[[args.list[n]]]) != 'list')
           stop(paste('Argument ', args.list[n], ' is not a list!'))
@@ -1300,11 +1371,10 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
   ## -possibility to identify gap less MSSA blocks
   ## -include possibility to infer slices.continuous max border
 
-
-
   if (print.status)
     cat(paste(Sys.time(), ' : Identifying valid cells ...\n', sep=''))
-  
+  treshhld.gappy <-  1
+
   ## get amount of missing values
   if (algorithm == 'Gapfill') {
     add.id = 1  
@@ -1353,27 +1423,17 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
         size.bg  <- args.call.SSA$size.biggap^(length(dims.process.length))
         dtpts    <- prod(dims.process.length)
         if (sum(gaps != 0) > 0 & tresh.fill.dc > 0) {
-          n_biggaps   <- max(c(floor(dtpts * gaps[1] /size.bg), 1))  
+          n.biggaps   <- max(c(floor(dtpts * gaps[1] /size.bg), 1))  
           if (gaps[1] > 0) {
-            n_smallgaps <- n_biggaps * size.bg * gaps[1] / gaps[2]
+            n.smallgaps <- n.biggaps * size.bg * gaps[1] / gaps[2]
           } else {
-            n_smallgaps <- dtpts * gaps[2]
+            n.smallgaps <- dtpts * gaps[2]
           }
-          treshhld.gappy <- 1 - ((n_smallgaps + n_biggaps * size.bg) / dtpts ) - tresh.fill.dc
+          treshhld.gappy <- 1 - ((n.smallgaps + n.biggaps * size.bg) / dtpts ) - tresh.fill.dc
         } else {
           treshhld.gappy <- 1 - (tresh.fill.dc)
         }
-        slices.too.gappy <- as.vector(amnt.na >= treshhld.gappy)
-        
-        ## modify this in case first guess is supplied
-        if ((length(first.guess) > 1) & tresh.fill.dc == 0) {
-          amnt.na.first.guess    <- apply(first.guess, MARGIN = dims.cycle.id + 1,
-              function(x)sum(is.na(x)) / dtpts  )
-          if ((length(ocean.mask) > 0 ) & (sum(!is.na(match(c('longitude','latitude'), dims.process))) == 2))
-            amnt.na.first.guess  <- 1- apply(first.guess, MARGIN = dims.cycle.id + 1 ,
-                function(x) sum(!is.na(x[as.vector(!ocean.mask)])) / sum(!ocean.mask)   )
-          slices.too.gappy[amnt.na.first.guess < 0.9 & amnt.na < 0.75] <- FALSE
-        }      
+        slices.too.gappy <- as.vector(amnt.na >= treshhld.gappy)   
         slices.too.gappy[slices.ocean] <- FALSE             
       } else if (g != 1) {
         slices.process <- slices.excluded
@@ -1441,5 +1501,6 @@ gapfillNcdfCoreprocess <- function(args.call.SSA, datacube, datapts.n, dims.cycl
               values.constant = values.constant, slices.constant = slices.constant, 
               slices.without.gaps = slices.without.gaps, 
               slices.excluded = slices.excluded,
-              slices.too.gappy = slices.too.gappy))
+              slices.too.gappy = slices.too.gappy,
+              tresh.min.length =  floor((1 - treshhld.gappy) * prod( dims.process.length))))
 }

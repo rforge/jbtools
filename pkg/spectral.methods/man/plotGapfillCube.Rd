@@ -7,7 +7,8 @@
 \usage{plotGapfillCube(file.orig, file.filled = sub("[.]nc", "_gapfill.nc", 
     file.orig), file.prefill = "", data.orig = c(), data.filled = c(), 
     data.prefill = c(), n.series = 16, lwd = 2, max.cores = 1, 
-    ...)}\arguments{
+    ...)}
+\arguments{
   \item{file.orig}{object to plot: file name or file.con object linking to the original (unfilled) ncdf file}
   \item{file.filled}{object to plot: file name or file.con object linking to the filled ncdf file}
   \item{file.prefill}{object to plot: file name or file.con object linking to the prefilled ncdf file}

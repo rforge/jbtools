@@ -1,5 +1,5 @@
 exportPattern("^[^\\.]")
-importFrom(Rssa, ssa, reconstruct, clusterify, decompose)
+importFrom(Rssa, ssa, reconstruct, grouping.auto, decompose)
 importFrom(RNetCDF,  open.nc, var.get.nc, close.nc)
 importFrom(abind, abind)
 importFrom(raster, raster, focal)

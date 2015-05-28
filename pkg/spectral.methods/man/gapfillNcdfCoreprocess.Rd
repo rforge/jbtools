@@ -5,7 +5,8 @@
 \usage{gapfillNcdfCoreprocess(args.call.SSA, datacube, datapts.n, dims.cycle.id, 
     dims.cycle.length, dims.process.id, dims.process.length, 
     file.name, first.guess, ind.process.cube, iter.gridind, iter.nr, 
-    iters.n, MSSA, print.status, reproducible)}\arguments{
+    iters.n, MSSA, print.status, reproducible)}
+\arguments{
   \item{args.call.SSA}{
 }
   \item{datacube}{

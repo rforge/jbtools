@@ -31,17 +31,17 @@ plotGapfillCube <- function(
   ## load data
   if (length(data.orig) == 0) {
     cat('Loading original data ...\n')
-    data.orig   <- transNcdfRotate(data.object = con.orig, var.name = var.orig)
+    data.orig   <- transNcdfRotate(data.object = con.orig, var.name = var.orig)$data
   }
   if (length(data.filled) == 0) {
     cat('Loading gapfilled data ...\n')    
-    data.filled <-  transNcdfRotate(data.object = con.filled, var.name = var.filled)  
+    data.filled <-  transNcdfRotate(data.object = con.filled, var.name = var.filled)$data 
   }
   if (length(data.prefill) == 0 & nchar(file.prefill)!=0) {
     cat('Loading pre-gapfilled data ...\n')
     con.prefill  <- open.nc(file.prefill)
     var.prefill  <- readNcdfVarName(file.prefill)
-    data.prefill <-  transNcdfRotate(data.object = con.prefill, var.name = var.prefill)  
+    data.prefill <-  transNcdfRotate(data.object = con.prefill, var.name = var.prefill)$data
   }
 
   
@@ -75,10 +75,8 @@ plotGapfillCube <- function(
 
   if (sum((c(-1, 1) * range.orig) <= (c(-1 , 1) * range.filled)) != 2)   # if range orig exceeds range filled
     stop('Range orig is bigger than filled! Check code and input files!')
-  ratios.wrong <- sum(cube.info.agg['filled', c('ratio_full', 'ratio_continous', 'ratio_empty')] * c(1,1,-1) <
-                      cube.info.agg['orig', c('ratio_full', 'ratio_continous', 'ratio_empty')] * c(1,1,-1) )
-  if(ratios.wrong > 0)
-    stop('Filled dataset seems to have more missings than orig. Check code and input data!')
+  if(sum(cube.info.orig['ratio na',,] - cube.info.filled['ratio na',,] < 0) > 0)
+    stop('Filled dataset seems to have more missings than orig for some grids. Check code and input data!')
  
   
   ## do plots
@@ -162,7 +160,6 @@ plotGapfillCube <- function(
   hst.filled  <- logHist(cube.info.filled['ratio na',,], breaks =100, col = 'red',
                          pch = 16, xlab = '', main = '', xlim = c(0,1), ylim = yRange)
   par(new = TRUE)
-  browser()
   hst.orig  <- logHist(cube.info.orig['ratio na',,], breaks =100, ylim = yRange,
           cex = 1.1, xlab = 'ratio of missing values per grid point', main = '', xlim = c(0,1))
   text(userCoords(c(0.7,0.9),c(0.9, 0.9)), labels =  c('filled', 'orig'),

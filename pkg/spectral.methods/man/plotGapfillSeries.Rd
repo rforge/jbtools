@@ -4,7 +4,8 @@
 \description{This function plots some overview statistics of the results of a gapfilling run
 in a netCDF file,  i.e. the results of a call to gapfillNcdf().}
 \usage{plotGapfillSeries(file.orig, file.filled = sub("[.]nc", "_gapfill.nc", 
-    file.orig), data.orig = c(), data.filled = c(), ...)}\arguments{
+    file.orig), data.orig = c(), data.filled = c(), ...)}
+\arguments{
   \item{file.orig}{object to plot: file name or file.con object linking to a ncdf file}
   \item{file.filled}{character string: name of the
 filled file.}

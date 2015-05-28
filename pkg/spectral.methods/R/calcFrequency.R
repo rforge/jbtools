@@ -1,10 +1,11 @@
+
 calcFrequency = function(
 ##title<< Estimate the frequency of a periodic signal
         series                             ##<< numeric vector: input vector (time series)
         , plot.periodogram = FALSE         ##<< logical: whether to plot a periodogram
 )
   ##description<<
-  ##Function to estimate the "main" frequency of a periodic time series.
+  ##Function to estimate the "dominant" frequency of a periodic time series signal.
   ##details<<
   ##This function uses Fourier decomposition to determine the 'major' frequency of a time
   ##series. Technically this is the frequency of the Fourier component with the highest

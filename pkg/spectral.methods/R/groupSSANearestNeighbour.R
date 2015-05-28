@@ -3,7 +3,7 @@ groupSSANearestNeighbour = function(
   x          ##<< object of class ssa (e.g. the results from a call to ssa)
   , ...      ##<< other objects that can be passed to the function but which
              ##   are not used. This is only implemented to make the function
-             ##    identical in its call to the clusterify function.
+             ##    identical in its call to the grouping.auto function.
 )
 ##description<<
 ##This function finds groups in SSA eigentriples by reconstructing
@@ -12,7 +12,7 @@ groupSSANearestNeighbour = function(
 ##Groups with more than two members are constructed by identifying
 ##groups with a very similar Euclidian distance.
 ##seealso<<
-##\code{\link{ssa}}, \code{\link{clusterify}}
+##\code{\link{ssa}}, \code{\link{grouping.auto}}
 {
   r.grouping       <- reconstruct(x)
   n.comp           <- length(r.grouping)

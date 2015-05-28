@@ -1,8 +1,9 @@
 \name{calcFrequency}
 \alias{calcFrequency}
 \title{Estimate the frequency of a periodic signal}
-\description{Function to estimate the "main" frequency of a periodic time series.}
-\usage{calcFrequency(series, plot.periodogram = FALSE)}\arguments{
+\description{Function to estimate the "dominant" frequency of a periodic time series signal.}
+\usage{calcFrequency(series, plot.periodogram = FALSE)}
+\arguments{
   \item{series}{numeric vector: input vector (time series)}
   \item{plot.periodogram}{logical: whether to plot a periodogram}
 }

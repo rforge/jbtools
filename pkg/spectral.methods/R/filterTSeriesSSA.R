@@ -21,12 +21,14 @@ series                      ##<< numeric vector: Input time series (no gaps!)
                             ## treated as "noise" and will not be included in the groups. The actual
                             ## threshold is calculated by multiplying the total variance of
                             ## the time series with this fraction.
-, grouping = c('clusterify', 'nearest_neigh')[1]##<< character string: Method to use for grouping
-                            ##  the individual SSA eigentriples. 'clusterify' uses the function
-                            ## of that name in package Rssa, 'nearest_neigh' employs a rather crude scheme
+, grouping = c('grouping.auto', 'nearest.neigh')[1]##<< character string: Method to use for grouping
+                            ##  the individual SSA eigentriples. 'grouping.auto' uses the function
+                            ## of that name in package Rssa, 'nearest.neigh' employs a rather crude scheme
                             ## based on finding pairs (or larger groups) in an euclidian
                             ## distance matrix of the reconstructions of all extracted SSA eigentriples.
-                            ## See ?clusterify or ?groupSSANearestNeighbour for details.
+                            ## See ?grouping.auto or ?groupSSANearestNeighbour for details.
+, groupingMethod = 'wcor'   ## character string: Method to use for grouping with the grouping.auto
+                            ## function.
 , repeat.extr = rep(1, times = length(borders.wl))##<< integer value/vector: How often to repeat the
                             ## extraction. If the respective value is > 1 than the result of the extraction
                             ## is again subject to spectral decomposition/filtering for n times and only
@@ -79,13 +81,13 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 ## Purpose
 ## The function is based on "singular spectrum analysis" (SSA) (Golyandina et al. [2001])
 ## based on the Rssa package (Korobeynikov (2013)).
-
+##
 ## Definition of the period borders (borders.wl):
 ## borders.wl contains the borders of the different periodicity bands to
 ## extract. Units are sampling frequency of the series. borders.wl has to be a
 ## list with one element per desired decomposition step (see also 'stepwise
 ## extraction').  In the case of a single band to be extracted, this vector has
-## to consist of two values (e.g. c(<lower border>,<upper_border>)).  In the
+## to consist of two values (e.g. c(<lower border>,<upper.border>)).  In the
 ## case of the extraction of several bands per step, the upper border of each
 ## band is automatically the lower border of the next band. A value of c(0, 10,
 ## 100) would, hence, result in the extraction of two bands, one consisting of
@@ -154,7 +156,7 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 ## and forecasting with R', Computational Statistics & Data Analysis.
 ## Golyandina, N.; Nekrutkin, V.; Nekrutkin, V. & Zhigljavsky, A. (2001),
 ## Analysis of time series structure: SSA and related techniques, CRC Press
-
+                              
 ##keyword<<
 ## SSA, time series, spectral analysis, singular spectrum analysis, spectral decomposition, filter
 
@@ -269,7 +271,7 @@ series                      ##<< numeric vector: Input time series (no gaps!)
   if (!(sum(diff(series) == 0) == length(series)-1)) {   ##if series not constant
 
     ## run calculation for all steps
-    for (h in 1:n.steps){
+    for (h in 1:n.steps) {
       if (print.stat)
         printStatus(paste('Spectral decomposition: Starting step ', h, ' of ',
                 n.steps, '.', sep = ''))
@@ -278,7 +280,7 @@ series                      ##<< numeric vector: Input time series (no gaps!)
       rows.results.step        <- rows.results.step.single[1]:rows.results.step.single[2]
       if (print.stat)
         printStatus('Spectral decomposition: Running SSA.')
-      for (j in 1:n.filtered.series){
+      for (j in 1:n.filtered.series) {
         if (sum(series.work == 0) == length(series)) {
           series.results[(-1:rows.results.step[j]-1), ] <- 0
           break.h.loop  =  TRUE
@@ -296,7 +298,8 @@ series                      ##<< numeric vector: Input time series (no gaps!)
           ## run SSA
           res.run          <- .calcSSAAllMethods(series.in = series.input, M = M[h], n.comp = n.comp[h],
                                                  SSA.methods = SSA.methods, kind = '1d-ssa',
-                                                 GroupEigTrpls = grouping, debugging = debugging)
+                                                 GroupEigTrpls = grouping, groupingMethod = groupingMethod,
+                                                 debugging = debugging)
           groups.ssa       <- res.run$ssa.groups.t
           n.pairs          <- length(groups.ssa)
           r.final          <- res.run$recstr.res
@@ -359,42 +362,47 @@ series                      ##<< numeric vector: Input time series (no gaps!)
           }
         }
         
-        ## plot pseudospectrum
-        if (plot.spectra) {
+        
+
+        ## subtract identified eigentriples from series (to use residuals for next iteration)
+        series.work <-  series.work - colSums(matrix(series.results[rows.results.step[j], ], ncol = n.datapts))
+    }
+      ## plot pseudospectrum
+      if (plot.spectra) {
           if (print.stat)
-            printStatus('Spectral decomposition: Plotting pseudospectrum.')
+              printStatus('Spectral decomposition: Plotting pseudospectrum.')
 
           ## calculate and plot Fourier Spectrum
           spec.fourier <- spectrum(series.work, plot = FALSE, span = 3)
           plot(spec.fourier$freq, spec.fourier$spec, type = 'l', log = 'xy', ylab = '',
-              yaxt = 'n', xaxt = 'n', xlab = '', col = 'gray', xlim = xlim, ylim = ylims.FFT)#, ...)
+               yaxt = 'n', xaxt = 'n', xlab = '', col = 'gray', xlim = xlim, ylim = ylims.FFT)#, ...)
           if (h == 1)
-            ylims.FFT <- 10^par()$usr[3:4]
+              ylims.FFT <- 10^par()$usr[3:4]
           axis(4)
           par(new = TRUE)
 
           ## plot SSA pseudospectrum
           plot(frequency, variance, pch = 1, cex = 0.8, ylab = '', xlab = '', log = 'xy',
-              xlim = xlim, xaxt = 'n', ylim = ylims.SSA, ...)
+               xlim = xlim, xaxt = 'n', ylim = ylims.SSA, ...)
           if (h == 1)
-            ylims.SSA <- 10^par()$usr[3:4]
+              ylims.SSA <- 10^par()$usr[3:4]
 
           ## add coloured polygons to mark band widths
           y.extremes <- 10^(par()$usr[c(3, 4)])
           x.extremes <- 10^(par()$usr[c(1, 2)])
           colors <-rainbow(n.filtered.series, alpha = 0.4)
           for (l in 1:n.filtered.series) {
-            for (m in 0:(harmonics[h])) {
-              if (m>0) {
-                x.poly <- c(freq.main * (m + 1) * (c(-1, 1, 1, -1) * tolerance.harmonics + 1))
-              } else {
-                x.poly <- 1 / c(borders.wl[[h]][l:(l + 1)], rev(borders.wl[[h]][l:(l + 1)]))
+              for (m in 0:(harmonics[h])) {
+                  if (m>0) {
+                      x.poly <- c(freq.main * (m + 1) * (c(-1, 1, 1, -1) * tolerance.harmonics + 1))
+                  } else {
+                      x.poly <- 1 / c(borders.wl[[h]][l:(l + 1)], rev(borders.wl[[h]][l:(l + 1)]))
+                  }
+                  x.poly[x.poly == 0] <- x.extremes[1]
+                  x.poly[!is.finite(x.poly)]<-x.extremes[2]
+                  y.poly <- rep(y.extremes, each = 2)
+                  polygon(x.poly, y.poly, col = colors[l])
               }
-              x.poly[x.poly == 0] <- x.extremes[1]
-              x.poly[!is.finite(x.poly)]<-x.extremes[2]
-              y.poly <- rep(y.extremes, each = 2)
-              polygon(x.poly, y.poly, col = colors[l])
-            }
           }
           abline(v = 1 / unique(unlist(borders.wl)), lty = 2)
 
@@ -406,30 +414,28 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 
           ## add x axis at top and bottom of plot
           if (h == 1 &second.axis)
-            plotAdditionalAxis(side = 3, label = '', trans.fun = function(x)1 / x)
+              plotAdditionalAxis(side = 3, label = '', trans.fun = function(x)1 / x)
           if(h == n.steps)
-            axis(1)
-          mtext(text = 'log(variance SSA eig.trp.)', outer = TRUE, side = 2, line = 1)
-          mtext(text = 'raw periodogram', outer = TRUE, side = 4, line = 1)
-          mtext(text = 'wavelength / period [timesteps]', side = 3, line = 1, outer = TRUE)
-          mtext(side = 1, 'frequency [1 / timestep]', line = 1, outer = TRUE)
-          text(10^par()$usr[1], 10^par()$usr[4], adj = c(0, 1), labels = paste('step ', h, sep = ''), cex = 1.5)
-
-          ## add legend
-          if (h == 1) {
-            legend('topright', legend = c('all SSA eigtrp.', 'SSA eigtrp. in band',
-                    'valid SSA eigtrp. in band', 'Fourier periodogram'),
-                col = c('black', 'blue', 'green', 'gray'), pch = c(20, 20, 20, NA), lty = c(NA, NA, NA, 1),
-                merge = TRUE, cex = 0.8, ncol = 2, x.intersp = 0, y.intersp = 0.6, bg = 'white')
+              axis(1)
+          if (open.plot) {
+              mtext(text = 'log(variance SSA eig.trp.)', outer = TRUE, side = 2, line = 1)
+              mtext(text = 'raw periodogram', outer = TRUE, side = 4, line = 1)
+              mtext(text = 'wavelength / period [timesteps]', side = 3, line = 1, outer = TRUE)
+              mtext(side = 1, 'frequency [1 / timestep]', line = 1, outer = TRUE)
+              text(10^par()$usr[1], 10^par()$usr[4], adj = c(0, 1), labels = paste('step ', h, sep = ''), cex = 1.5)
+              
+              ## add legend
+              if (h == 1) {
+                  legend('topright', legend = c('all SSA eigtrp.', 'SSA eigtrp. in band',
+                                         'valid SSA eigtrp. in band', 'Fourier periodogram'),
+                         col = c('black', 'blue', 'green', 'gray'), pch = c(20, 20, 20, NA), lty = c(NA, NA, NA, 1),
+                         merge = TRUE, cex = 0.8, ncol = 2, x.intersp = 0, y.intersp = 0.6, bg = 'white')
+              }
           }
-        }
-
-        ## subtract identified eigentriples from series (to use residuals for next iteration)
-        series.work <-  series.work - colSums(matrix(series.results[rows.results.step[j], ], ncol = n.datapts))
       }
       if (break.h.loop)
-        break
-    }
+          break
+  }
 
     ## return results
     if (print.stat)

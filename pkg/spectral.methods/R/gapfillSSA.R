@@ -21,12 +21,18 @@ gapfillSSA <- structure(function(
                                      ##   probably produces unreliable results (i.e. a strong build up of amplitude).
     , first.guess = c()              ##<< numeric vector/matrix: First guess for the gap values. The mean/zero is used if
                                      ##   no value is supplied. Has to have the same dimensions and lengths as series.
-    , GroupEigTrpls = 'clusterify'   ##<< character string: Name of the function used to group the eigentriples. This function
+    , GroupEigTrpls = 'grouping.auto'##<< character string: Name of the function used to group the eigentriples. This function
                                      ##   needs to take a ssa object as its first input and other inputs as its ... argument.
                                      ##   It has to return a list with the length of the desired amount of SSA groups. Each of
                                      ##   its elements has to be a integer vector indicating which SSA eigentriple(s) belong(s)
-                                     ##   to this group. Possible settings are 'clusterify' or 'groupSSANearestNeighbour'. In the case of
-                                     ##   'clusterify' this is automatically set to 'groupSSANearestNeighbour' in the case of 2d-ssa.
+                                     ##   to this group. The function 'grouping.auto' uses the methods supplied by the Rssa
+                                     ##   package (See argument groupingMethod to set the corresponding argument for the
+                                     ##   method). Another possibility is 'groupSSANearestNeighbour' which uses a rather
+                                     ##   ad-hoc method of detecting the nearest (Euclidian) neighbour of each eigentriple.
+                                     ##   2D SSA automatically uses the nearest neighbor method as grouping was not (yet)
+                                     ##   implemented for 2D SSA.
+    , groupingMethod = 'wcor'        ##   character string: One of "wcor" or "pgram": Method to use for the automatic
+                                     ##   grouping methods of the Rssa package (see ?grouping.auto).
     , kind = c('auto', '1d-ssa', '2d-ssa')[1]   ##<< character string: Whether to calculate one or two dimensional SSA (see the
                                      ##   help of ssa()). Default is to determine this automatically by determining
                                      ##   the dimensions of series.
@@ -35,7 +41,7 @@ gapfillSSA <- structure(function(
                                      ##   2d SSA a vector of length 2 has to be supplied. If only one number is given,
                                      ##   this is taken for both dimensions. (see ?ssa, here the parameter is called L)
     , matrix.best.iter = 'perf.all.gaps'##<< character string: Which performance matrix to use (has to be one of
-                                     ##   recstr_perf_a, recstr_perf_s or recstr_perf_b (see ?.getBestIteration)).
+                                     ##   recstr.perf.a, recstr.perf.s or recstr.perf.b (see ?.getBestIteration)).
     , MeasPerf = 'RMSE'              ##<< character string: Name of a function to determine the 'goodness of fit'
                                      ##   between the reconstruction and the actual values in the artificial
                                      ##   gaps. The respective function has to take two vectors as an input and
@@ -70,8 +76,8 @@ gapfillSSA <- structure(function(
 )
 ##description<<
 ## gapfillSSA applies the iterative gap filling procedure proposed by Kondrashov and Ghil
-## (2006) in a fast and optimized way developed by Korobeneykov
-## (2009). Generally spoken, major periodic components of the time series are
+## (2006) in a fast and optimized way developed by Korobeynikov
+## (2010). Generally spoken, major periodic components of the time series are
 ## determined and interpolated into gap positions. An iterative cross validation
 ## scheme with artificial gaps is used to determine these periodic components.
                         
@@ -90,12 +96,12 @@ gapfillSSA <- structure(function(
 ##
 ## Iteration performance measure:
 ## The DetBestIter function should take any of the RMSE matrices (small/big/all gaps)
-## as an input and return i_best with best inner loops for each outer loop and h_best
+## as an input and return i.best with best inner loops for each outer loop and h.best
 ## as the outer loop until which should be iterated. Use the default function as a
 ## reference.
 ##
 ## Visualize results:
-## If plot_per == TRUE an image plot is produced visualizing the RMSE between
+## If plot.per == TRUE an image plot is produced visualizing the RMSE between
 ## the artificial gaps and the reconstruction for each iteration. A red dot
 ## indicates the iteration chosen for the final reconstruction.
 ##
@@ -119,8 +125,9 @@ gapfillSSA <- structure(function(
 ##references<<
 ## Kondrashov, D. & Ghil, M. (2006), Spatio-temporal filling of missing points in geophysical data sets,
 ## Nonlinear Processes In Geophysics,S 2006, Vol. 13(2), pp. 151-159
-## Korobeneykov, A. (2009), Computation- and Space-Efficient Implementation of SSA, ArXiv e-prints,
-## www.adsabs.harvard.edu/abs/2009arXiv0911.4498K
+## Korobeynikov, A. (2010), Computation- and space-efficient implementation of SSA.
+## Statistics and Its Interface, Vol. 3, No. 3, Pp. 257-268
+
 
 ##keyword<<
 ## SSA, gap filling, time series, spectral analysis, singular spectrum analysis
@@ -159,7 +166,7 @@ gapfillSSA <- structure(function(
   results.argscheck <- do.call(.gapfillSSACheckInput, args.check)
   kind              <- results.argscheck$kind
   GroupEigTrpls     <- results.argscheck$GroupEigTrpls
-  n.dims            <-results.argscheck$n.dims
+  n.dims            <- results.argscheck$n.dims
   n.rows            <- results.argscheck$n.rows
   series            <- results.argscheck$series
   M                 <- results.argscheck$M
@@ -167,7 +174,7 @@ gapfillSSA <- structure(function(
   SSA.methods       <- results.argscheck$SSA.methods
   n.comp            <- results.argscheck$n.comp
   amnt.artgaps      <- results.argscheck$amnt.artgaps
-  error_occoured    <- FALSE
+  error.occoured    <- FALSE
   colors            <- colorRampPalette(c('blue', 'red'))(amnt.iters[2])
 
   ## pad series
@@ -190,48 +197,48 @@ gapfillSSA <- structure(function(
   
   ## Prepare variables
   n.datapts        <- length(series.work)
-  ind_plot_progress<- sort(sample(1:n.datapts, min(c(1000, n.datapts))))
+  ind.plot.progress<- sort(sample(1:n.datapts, min(c(1000, n.datapts))))
   perf.all.gaps    <- matrix(nrow = amnt.iters[1], ncol = amnt.iters[2])  # matrix for prediction performance in all gaps
-  dimnames(perf.all.gaps) <- list(paste('os_', 1:amnt.iters[1], sep = ''),
-                                  paste('is_', 1:amnt.iters[2], sep = ''))
+  dimnames(perf.all.gaps) <- list(paste('os.', 1:amnt.iters[1], sep = ''),
+                                  paste('is.', 1:amnt.iters[2], sep = ''))
   perf.big.gaps    <- matrix(nrow = amnt.iters[1], ncol = amnt.iters[2])  # matrix for prediction performance in big gaps
-    dimnames(perf.big.gaps) <- list(paste('os_', 1:amnt.iters[1], sep = ''),
-                                  paste('is_', 1:amnt.iters[2], sep = ''))
+    dimnames(perf.big.gaps) <- list(paste('os.', 1:amnt.iters[1], sep = ''),
+                                  paste('is.', 1:amnt.iters[2], sep = ''))
   perf.small.gaps    <- matrix(nrow = amnt.iters[1], ncol = amnt.iters[2])  # matrix for prediction performance in small gaps
-  dimnames(perf.small.gaps) <- list(paste('os_', 1:amnt.iters[1], sep = ''),
-                                  paste('is_', 1:amnt.iters[2], sep = ''))
-  recstr_diffsum   <- array(NA, dim = c(amnt.iters[1], amnt.iters[2]-1, 2))  # matrix for prediction performance in small gaps
-  dimnames(recstr_diffsum ) <- list(paste('os_',  1:(amnt.iters[1]), sep = ''),
-                                  paste('is_',   1:(amnt.iters[2]-1), '-', 2:(amnt.iters[2]), sep = ''),
+  dimnames(perf.small.gaps) <- list(paste('os.', 1:amnt.iters[1], sep = ''),
+                                  paste('is.', 1:amnt.iters[2], sep = ''))
+  recstr.diffsum   <- array(NA, dim = c(amnt.iters[1], amnt.iters[2]-1, 2))  # matrix for prediction performance in small gaps
+  dimnames(recstr.diffsum ) <- list(paste('os.',  1:(amnt.iters[1]), sep = ''),
+                                  paste('is.',   1:(amnt.iters[2]-1), '-', 2:(amnt.iters[2]), sep = ''),
                                     c('cv', 'final'))
-  iloop_converged  <- vector(mode='logical', length = amnt.iters[1])
-  iloop_converged  <- array(FALSE, dim=c(amnt.iters[1], 2))
-  dimnames(iloop_converged) <- list(c(paste('outer_step_', 1:amnt.iters[1], sep = '')),
+  iloop.converged  <- vector(mode='logical', length = amnt.iters[1])
+  iloop.converged  <- array(FALSE, dim=c(amnt.iters[1], 2))
+  dimnames(iloop.converged) <- list(c(paste('outer.step.', 1:amnt.iters[1], sep = '')),
                              c('crossvalidation', 'filling'))
   break.outer.loop <- FALSE
-  i_best           <- array(NA, dim=c(amnt.iters[1], 2))
-  dimnames(i_best) <- list(c(paste('outer_step_', 1:amnt.iters[1], sep = '')),
+  i.best           <- array(NA, dim=c(amnt.iters[1], 2))
+  dimnames(i.best) <- list(c(paste('outer.step.', 1:amnt.iters[1], sep = '')),
                              c('crossvalidation', 'filling'))
 
   ## prepare output list
   ##value<< list with components
   results <- list(
-    error_occoured = error_occoured  ##<< logical: whether a non caught error occoured in one
+    error.occoured = error.occoured  ##<< logical: whether a non caught error occoured in one
                                        ##   of the SSA calculations.
     , filled.series = series           ##<< numeric vector/matrix: filled series with the same
                                        ## length as series but without gaps. Gaps at the margins
                                        ## of the series can not be filled and will occur in
                                        ## filled.series (and reconstr).
-    , i_best = i_best                  ##<< integer matrix: inner loop iteration for each outer loop step in
+    , i.best = i.best                  ##<< integer matrix: inner loop iteration for each outer loop step in
                                        ## which the process has finally converged (depending on the
                                        ## threshold determined by tresh.convergence). If the RMSE
                                        ## between two inner loop iterations has been monotonously
                                        ## sinking (and hence, the differences between SSA iterations
                                        ## can be expected to be rather small), this is set to amnt.iters[2].
                                        ## If not, the process most likely has been building up itself, this
-                                       ## is set to 0. In both cases iloop_converged is set FALSE.
-    , iloop_converged =  iloop_converged##<< logical matrix: Whether each outer loop iteration has converged
-                                       ## (see also i_best).
+                                       ## is set to 0. In both cases iloop.converged is set FALSE.
+    , iloop.converged =  iloop.converged##<< logical matrix: Whether each outer loop iteration has converged
+                                       ## (see also i.best).
     , iter.chosen = c(NA, NA)          ##<< integer vector: iterations finally chosen for the
                                        ## reconstruction.   
     , perf.all.gaps = perf.all.gaps    ##<< numeric matrix: performance (RMSE) for the filling
@@ -240,12 +247,12 @@ gapfillSSA <- structure(function(
                                        ## of the small artificial gaps.
     , perf.big.gaps = perf.big.gaps    ##<<  numeric matrix: performance (RMSE) for the filling
                                        ## of the big artificial gaps.
-    , process_converged = FALSE        ##<< logical: Whether the whole process has converged. For
+    , process.converged = FALSE        ##<< logical: Whether the whole process has converged. For
                                        ## simplicity reasons, this only detects whether the last outer loop
                                        ## of the final filling process has converged.
     , reconstr = rep(NA, length(series))##<< numeric vector/matrix: filtered series or reconstruction
                                        ## finally used to fill gaps.
-    , recstr_diffsum = recstr_diffsum  ##<< numeric matrix: RMSE between two consecutive inner loop iterations.
+    , recstr.diffsum = recstr.diffsum  ##<< numeric matrix: RMSE between two consecutive inner loop iterations.
                                        ## This value is checked to be below tresh.convergence to determine
                                        ## whether the process has converged.                                
     , settings = settings              ##<< list: settings used to perform the calculation.
@@ -257,8 +264,8 @@ gapfillSSA <- structure(function(
   results.centering  <- .gapfillSSACenterSeries(series.work = series.work, 
                                                z.trans.series = z.trans.series,
                                                first.guess = first.guess)
-  mean_pars <- results.centering$mean_pars; series.work <- results.centering$series.work; 
-  rescale_std <- results.centering$rescale_std; series.untouched <- results.centering$series.untouched
+  mean.pars <- results.centering$mean.pars; series.work <- results.centering$series.work; 
+  rescale.std <- results.centering$rescale.std; series.untouched <- results.centering$series.untouched
 
   ## insert artificial big gaps (if wanted)
   results.insrtgaps  <- .gapfillSSAInsertGaps(amnt.artgaps = amnt.artgaps, n.datapts = n.datapts, 
@@ -266,9 +273,9 @@ gapfillSSA <- structure(function(
                                              series = series, series.work = series.work,
                                              seed = seed, kind = kind, ind.padded = ind.padded,
                                              series.untouched = series.untouched)
-  index_biggap <- results.insrtgaps$index_biggap; index_artgaps <- results.insrtgaps$index_artgaps; 
-  index_allgaps <- results.insrtgaps$index_allgaps; index_smallgaps <- results.insrtgaps$index_smallgaps; 
-  series.work <- results.insrtgaps$series.work; index_gaps <- results.insrtgaps$index_gaps
+  index.biggap <- results.insrtgaps$index.biggap; index.artgaps <- results.insrtgaps$index.artgaps; 
+  index.allgaps <- results.insrtgaps$index.allgaps; index.smallgaps <- results.insrtgaps$index.smallgaps; 
+  series.work <- results.insrtgaps$series.work; index.gaps <- results.insrtgaps$index.gaps
   
   ## stop in case too few datapoints are available
   if (length(series.work) < tresh.min.length | isSeriesConstant(series.work)) {
@@ -279,7 +286,7 @@ gapfillSSA <- structure(function(
     if (debugging) {
       str.time <- gsub('[[:space:]]', '-', gsub('[[:punct:]]', '-', as.character(Sys.time())))
       path.debug  <- file.path('/Net', 'Groups', 'BGI', 'tmp','jbuttlar', 
-                               'Cluster_jobs_debugging', sub('/Net/Groups/BGI/', '', getwd()))
+                               'Cluster_jobs_debugging', getwd())
       if (!file.exists(path.debug))
         system(paste('mkdir -p ', path.debug, sep = ''))     
       file.name.debug  <- paste(path.debug, '/debug_begin_', str.time, sep = '')            
@@ -292,11 +299,11 @@ gapfillSSA <- structure(function(
 #############################     Cross validation Loop     ################################
   ## fill all gaps with mean  = 0
   if (length(first.guess) == 0) {
-    series.work[index_allgaps] <- 0
+    series.work[index.allgaps] <- 0
   } else {
-    series.work[index_allgaps] <- (first.guess[index_allgaps] - mean_pars) / rescale_std
-    if (sum(is.na(first.guess[index_allgaps])) > 0)
-      series.work[index_allgaps[is.na(first.guess[index_allgaps])]] <- 0
+    series.work[index.allgaps] <- (first.guess[index.allgaps] - mean.pars) / rescale.std
+    if (sum(is.na(first.guess[index.allgaps])) > 0)
+      series.work[index.allgaps[is.na(first.guess[index.allgaps])]] <- 0
   }
   
   ## perform iterative SSA loop
@@ -308,11 +315,11 @@ gapfillSSA <- structure(function(
 
       if (plot.progress) {                         
         dev.new()
-        yrange <- range(series.work[ind_plot_progress]) + c(-1,1)* diff(range(series.work[ind_plot_progress]))
-        plot((1:n.datapts)[ind_plot_progress], series.work[ind_plot_progress],
+        yrange <- range(series.work[ind.plot.progress]) + c(-1,1)* diff(range(series.work[ind.plot.progress]))
+        plot((1:n.datapts)[ind.plot.progress], series.work[ind.plot.progress],
              col = 'gray', type ='b', ylim = yrange)
-        points((1:n.datapts)[setdiff(ind_plot_progress, ind.padded)],
-               series.work[setdiff(ind_plot_progress, ind.padded)], col = 'black')
+        points((1:n.datapts)[setdiff(ind.plot.progress, ind.padded)],
+               series.work[setdiff(ind.plot.progress, ind.padded)], col = 'black')
       }     
       for (i in 1:amnt.iters[2]) {
         if (sum(is.na(series.work)) > 0) 
@@ -324,51 +331,52 @@ gapfillSSA <- structure(function(
           run.grouping = FALSE
         }            
         args.ssa <- list(series.in = series.work, M = M, n.comp = n.comp, 
-                         kind = kind, GroupEigTrpls =  GroupEigTrpls, 
+                         kind = kind, GroupEigTrpls =  GroupEigTrpls,
+                         groupingMethod = groupingMethod,
                          iterindex = paste(h, '/', i, sep = ''), 
                          SSA.methods = SSA.methods, ssa.groups.t = ssa.groups.t, 
                          seed = seed + (h * amnt.iters[2] + i), 
                          run.grouping = run.grouping, debugging = debugging)                                                                 
         results.ssa  <- do.call(.calcSSAAllMethods, args.ssa)   
         if (results.ssa[['error']]) {
-          results$error_occoured <- TRUE
+          results$error.occoured <- TRUE
           return(results)          
         }  
         ssa.groups.t <- results.ssa[['ssa.groups.t']]
         max.recstr           <- min(c(h, length(ssa.groups.t)))            
-        rcstr_t              <- colSums(matrix(unlist(results.ssa[['recstr.res']][1:max.recstr]),
+        rcstr.t              <- colSums(matrix(unlist(results.ssa[['recstr.res']][1:max.recstr]),
                                                nrow = max.recstr, ncol = n.datapts, byrow = TRUE))
-        perf.small.gaps[h, i]<- do.call(MeasPerf, list(series.untouched[index_smallgaps],
-                                                       rcstr_t[index_smallgaps]))
-        perf.big.gaps[h, i]  <- do.call(MeasPerf, list(series.untouched[index_biggap],
-                                                       rcstr_t[index_biggap]))
-        perf.all.gaps[h, i]  <- do.call(MeasPerf, list(series.untouched[index_artgaps],
-                                                       rcstr_t[index_artgaps]))
-        series.work[index_allgaps] <- rcstr_t[index_allgaps]
+        perf.small.gaps[h, i]<- do.call(MeasPerf, list(series.untouched[index.smallgaps],
+                                                       rcstr.t[index.smallgaps]))
+        perf.big.gaps[h, i]  <- do.call(MeasPerf, list(series.untouched[index.biggap],
+                                                       rcstr.t[index.biggap]))
+        perf.all.gaps[h, i]  <- do.call(MeasPerf, list(series.untouched[index.artgaps],
+                                                       rcstr.t[index.artgaps]))
+        series.work[index.allgaps] <- rcstr.t[index.allgaps]
         if (i > 1) {
-          recstr_diffsum[h, i-1, 1] <- sqrt(mean((rcstr_t - recstr.last)^2))
-          if ((i > 3) && (sum(recstr_diffsum[h, (i-4):(i-1), 1] > tresh.convergence) == 0)) {
-            i_best[h, 1] <- i
+          recstr.diffsum[h, i-1, 1] <- sqrt(mean((rcstr.t - recstr.last)^2))
+          if ((i > 3) && (sum(recstr.diffsum[h, (i-4):(i-1), 1] > tresh.convergence) == 0)) {
+            i.best[h, 1] <- i
             break
           }
         }
-        recstr.last <- rcstr_t    
+        recstr.last <- rcstr.t    
         if (plot.progress) {
-          points((1:n.datapts)[],   rcstr_t , col = colors[i], type = 'l')
+          points((1:n.datapts)[],   rcstr.t , col = colors[i], type = 'l')
           Sys.sleep(0.02)
         }
       }
       if (i == amnt.iters[2]) {                                                  # if not converged
-        i_best[h, 1] <- amnt.iters[2]
-        if (recstr_diffsum[h, i-1, 1] > recstr_diffsum[h, 1, 1]) {
+        i.best[h, 1] <- amnt.iters[2]
+        if (recstr.diffsum[h, i-1, 1] > recstr.diffsum[h, 1, 1]) {
           series.work  <- series.loopstart
-          i_best[h, 1] <- 0
+          i.best[h, 1] <- 0
         }
       } else {                                                                   # if converged
         if (scale.recstr) {
-          series.work[index_allgaps]  = (rcstr_t/sd(rcstr_t))[index_allgaps]
+          series.work[index.allgaps]  = (rcstr.t/sd(rcstr.t))[index.allgaps]
         } else {
-          series.work[index_allgaps] <- rcstr_t[index_allgaps]              
+          series.work[index.allgaps] <- rcstr.t[index.allgaps]              
         }                
         if (h+1 > length(ssa.groups.t) & amnt.iters[1] > length(ssa.groups.t)) {
         print(paste('Extraction of ', h + 1, ' groups of eigentriples not possible!',
@@ -377,10 +385,10 @@ gapfillSSA <- structure(function(
         if (debugging) {
           str.time <- gsub('[[:space:]]', '-', gsub('[[:punct:]]', '-', as.character(Sys.time())))
           path.debug  <- file.path('/Net', 'Groups', 'BGI', 'tmp','jbuttlar', 
-                                   'Cluster_jobs_debugging', sub('/Net/Groups/BGI/', '', getwd()))
+                                   'Cluster_jobs_debugging', getwd())
           if (!file.exists(path.debug))
             system(paste('mkdir -p ', path.debug, sep = ''))     
-          file.name.debug  <- paste(path.debug, '/debug_convergence_', str.time, sep = '')            
+          file.name.debug  <- paste(path.debug, '/debug_convergence_', str.time, '_', sample(1:1000000, 1), sep = '')            
           dump.frames(dumpto = file.name.debug, to.file = TRUE)
           printStatus(paste('Saved debugging workspace to file ', file.name.debug, '.rda', sep = ''))
         }
@@ -392,11 +400,11 @@ gapfillSSA <- structure(function(
                             ' outer iterations.', sep = ''))
       }
     }
-    h_best      <- do.call(DetBestIter, list(get(matrix.best.iter)))$h_best
-    iter.chosen <- c(h_best, mean(i_best[1:h_best, 1], na.rm = TRUE))
+    h.best      <- do.call(DetBestIter, list(get(matrix.best.iter)))$h.best
+    iter.chosen <- c(h.best, mean(i.best[1:h.best, 1], na.rm = TRUE))
   } else {
-    h_best      <- amnt.iters[1]
-    i_best[, 1] <- rep(amnt.iters[2], each =  amnt.iters[1])
+    h.best      <- amnt.iters[1]
+    i.best[, 1] <- rep(amnt.iters[2], each =  amnt.iters[1])
   }
 
 ##########################    final Reconstruction        #########################
@@ -404,13 +412,13 @@ gapfillSSA <- structure(function(
     printStatus('gap filling: Reconstructing timeseries...')
   series.work                   <- series.untouched
   if (length(first.guess) == 0) {
-    series.work[index_gaps]   <- 0
+    series.work[index.gaps]   <- 0
   } else {
-    series.work[index_gaps]   <-  (first.guess[index_gaps] - mean_pars) / rescale_std
-    if (sum(is.na(first.guess[index_gaps]))>0)
-      series.work[index_gaps[is.na(first.guess[index_gaps])]] <- 0
+    series.work[index.gaps]   <-  (first.guess[index.gaps] - mean.pars) / rescale.std
+    if (sum(is.na(first.guess[index.gaps]))>0)
+      series.work[index.gaps[is.na(first.guess[index.gaps])]] <- 0
   } 
-  for (h in amnt.iters.start[1]:h_best) {
+  for (h in amnt.iters.start[1]:h.best) {
     series.loopstart <- series.work
     for (i in amnt.iters.start[2]:amnt.iters[2]) {            
       if (i == amnt.iters.start[2]) {
@@ -428,31 +436,31 @@ gapfillSSA <- structure(function(
       results.ssa <- do.call(.calcSSAAllMethods, args.ssa)   
       ssa.groups.t<- results.ssa[['ssa.groups.t']]            
       if (results.ssa[['error']]) {
-        results$error_occoured <- TRUE
+        results$error.occoured <- TRUE
         return(results)          
       }
       n.comps     <- min(c(h, length(ssa.groups.t)))
       recstr.t    <- colSums(matrix(unlist(results.ssa[['recstr.res']][1:n.comps]),
                                    nrow = n.comps, ncol = n.datapts, byrow = TRUE))
-      series.work[index_allgaps]  <- recstr.t[index_allgaps] 
+      series.work[index.allgaps]  <- recstr.t[index.allgaps] 
       if (i > 1) {
-        recstr_diffsum[h, i-1, 2] <- sqrt(mean((recstr.t - recstr.last)^2))
-        if ((i > 3) && (sum(recstr_diffsum[h, (i-4):(i-1), 2] > tresh.convergence) == 0)) {
-          i_best[h, 2] <- i
+        recstr.diffsum[h, i-1, 2] <- sqrt(mean((recstr.t - recstr.last)^2))
+        if ((i > 3) && (sum(recstr.diffsum[h, (i-4):(i-1), 2] > tresh.convergence) == 0)) {
+          i.best[h, 2] <- i
           break
         }
       }
       recstr.last <- recstr.t    
     }
     if (i == amnt.iters[2]) {                                                   ## if not converged
-      i_best[h, 2]<-  amnt.iters[2]
-      if(recstr_diffsum[h, i-1, 2] > recstr_diffsum[h, 1, 2]) {
+      i.best[h, 2]<-  amnt.iters[2]
+      if(recstr.diffsum[h, i-1, 2] > recstr.diffsum[h, 1, 2]) {
         series.work  <- series.loopstart
-        i_best[h, 2] <- 0
+        i.best[h, 2] <- 0
       }
     } else {                                                                    ## if converged
       if (scale.recstr) {  
-      series.work[index_allgaps]  = (recstr.t /sd(recstr.t))[index_allgaps]
+      series.work[index.allgaps]  = (recstr.t /sd(recstr.t))[index.allgaps]
     }   
       if (h + 1 > length(ssa.groups.t) & amnt.iters[1] > length(ssa.groups.t)) {
       print(paste('Extraction of ', h + 1, ' groups of eigentriples not possible!',
@@ -460,10 +468,10 @@ gapfillSSA <- structure(function(
       if (debugging) {
         str.time <- gsub('[[:space:]]', '-', gsub('[[:punct:]]', '-', as.character(Sys.time())))
         path.debug <- file.path('/Net', 'Groups', 'BGI', 'tmp', 'jbuttlar', 
-                                'Cluster_jobs_debugging', sub('/Net/Groups/BGI/', '', getwd()))
+                                'Cluster_jobs_debugging', getwd())
         if (!file.exists(path.debug))
           system(paste('mkdir -p ', path.debug, sep = ''))     
-        file.name.debug  <- paste(path.debug, '/debug_convergence_', str.time, sep = '')            
+        file.name.debug  <- paste(path.debug, '/debug_convergence_', str.time, '_', sample(1:1000000, 1), sep = '')            
         dump.frames(dumpto = file.name.debug, to.file = TRUE)
         printStatus(paste('Saved debugging workspace to file ', getwd(), '/',
                             file.name.debug, '.rda', sep = ''))
@@ -473,12 +481,12 @@ gapfillSSA <- structure(function(
     }
     }
     if (print.stat) {
-      printStatus(paste('Reconstruction: finished ', h, ' of ', h_best,
+      printStatus(paste('Reconstruction: finished ', h, ' of ', h.best,
                           ' outer iterations.', sep = ''))
     }
   }
   if (sum(amnt.artgaps > 0) == 0)
-    iter.chosen <- c(h_best, mean(i_best[1:h_best, 2], na.rm = TRUE))
+    iter.chosen <- c(h.best, mean(i.best[1:h.best, 2], na.rm = TRUE))
 
   if (print.stat)
     printStatus('Reconstruction: Iteration process finished.')
@@ -492,9 +500,9 @@ gapfillSSA <- structure(function(
   }
   if (n.dims == 1)
     recstr               <- as.vector(recstr)
-  series.out[index_gaps] <- recstr[index_gaps]
-  series.out             <- (series.out * rescale_std)  + mean_pars
-  recstr                 <- (recstr * rescale_std) + mean_pars
+  series.out[index.gaps] <- recstr[index.gaps]
+  series.out             <- (series.out * rescale.std)  + mean.pars
+  recstr                 <- (recstr * rescale.std) + mean.pars
   
   if (sum(is.na(series.out)) > 0)
     stop('Filled series still contains gaps! Consider reprogramming the function!')
@@ -512,29 +520,29 @@ gapfillSSA <- structure(function(
   }
 
   ## make estimate whether process converged
-  iloop_converged = i_best < amnt.iters[2]
-  iloop_converged[is.na(iloop_converged)] <- FALSE
-  results$process_converged = iloop_converged[iter.chosen[1], 2]
-  if (!results$process_converged & print.stat)
-    cat('Iteration process seems not to have converged! Check recstr_diffsum for hints!')
+  iloop.converged = i.best < amnt.iters[2]
+  iloop.converged[is.na(iloop.converged)] <- FALSE
+  results$process.converged = iloop.converged[iter.chosen[1], 2]
+  if (!results$process.converged & print.stat)
+    cat('Iteration process seems not to have converged! Check recstr.diffsum for hints!')
 
   ##prepare results for return
   results$settings$SSA.method = results.ssa[['method.used']]
   results$filled.series = series.out  
-  results$i_best = i_best  
-  results$iloop_converged =  iloop_converged
+  results$i.best = i.best  
+  results$iloop.converged =  iloop.converged
   results$iter.chosen = iter.chosen 
   results$perf.all.gaps = perf.all.gaps 
   results$perf.small.gaps = perf.small.gaps
   results$perf.big.gaps = perf.big.gaps
   results$reconstr = recstr
-  results$recstr_diffsum = recstr_diffsum                    
+  results$recstr.diffsum = recstr.diffsum                    
   results$variances = (results.ssa[['ssa.res']]$sigma[1:n.comp] / sum(results.ssa[['ssa.res']]$sigma[1:n.comp]))
 
   ## plot cross validation performance
   if (plot.results)
     .gapfillSSAPlot(open.plot = open.plot, results = results, amnt.iters = amnt.iters,
-                   iter.chosen = iter.chosen, i_best = i_best, MeasPerf = MeasPerf)
+                   iter.chosen = iter.chosen, i.best = i.best, MeasPerf = MeasPerf)
   return(results)
 }, ex = function(){
   ## create series with gaps
@@ -567,12 +575,13 @@ gapfillSSA <- structure(function(
 
 #################################      check input     ###########################################
 .gapfillSSACheckInput <- function(amnt.artgaps,  amnt.iters, amnt.iters.start, debugging,
-                                 DetBestIter, first.guess, fill.margins, GroupEigTrpls, kind,
-                                 matrix.best.iter, MeasPerf, n.comp, M, open.plot,
-                                 pad.series, print.stat, plot.results, plot.progress,
-                                 remove.infinite , scale.recstr, seed,
-                                 series, size.biggap, SSA.methods, tresh.convergence,
-                                 tresh.min.length, z.trans.series)
+                                  DetBestIter, first.guess, fill.margins, GroupEigTrpls,
+                                  groupingMethod, kind, matrix.best.iter, MeasPerf,
+                                  n.comp, M, open.plot,
+                                  pad.series, print.stat, plot.results, plot.progress,
+                                  remove.infinite , scale.recstr, seed,
+                                  series, size.biggap, SSA.methods, tresh.convergence,
+                                  tresh.min.length, z.trans.series)
 {
   ##ToDO do something useful when no gaps are in the data
 
@@ -592,7 +601,7 @@ gapfillSSA <- structure(function(
     n.cols     <- dim(series)[2]
     n.rows     <- dim(series)[1]
     dim.series <- dim(series)
-    if (GroupEigTrpls == 'clusterify')
+    if (GroupEigTrpls == 'grouping.auto')
       GroupEigTrpls = 'groupSSANearestNeighbour'
     if (prod(M) < 10) {
       stop(paste('SSA for such small window sizes (~ < sqrt(10)) is only possible for methods which',
@@ -609,13 +618,13 @@ gapfillSSA <- structure(function(
   ## check whether amnt.artgaps is too small
   if(sum(amnt.artgaps != 0) > 0) {
     n.series.valid <- diff(range(which(!is.na(series))))
-    n_biggaps   <- max(c(floor(n.series.valid * amnt.artgaps[1] / size.biggap^(n.dims)), 1))  
+    n.biggaps   <- max(c(floor(n.series.valid * amnt.artgaps[1] / size.biggap^(n.dims)), 1))  
     if (amnt.artgaps[1] > 0) {
-      n_smallgaps <- n_biggaps * size.biggap^(n.dims) * amnt.artgaps[1] / amnt.artgaps[2]
+      n.smallgaps <- n.biggaps * size.biggap^(n.dims) * amnt.artgaps[1] / amnt.artgaps[2]
     } else {
-      n_smallgaps <- n.series.valid * amnt.artgaps[2]
+      n.smallgaps <- n.series.valid * amnt.artgaps[2]
     }
-    n.gaps <- n_smallgaps + n_biggaps*size.biggap
+    n.gaps <- n.smallgaps + n.biggaps*size.biggap
     if (sum(!is.na(series)) < 1.2* n.gaps)
       stop('Specified artificial gap sizes would be too large!')
   } 
@@ -745,20 +754,20 @@ gapfillSSA <- structure(function(
 
 .gapfillSSACenterSeries <- function(series.work, z.trans.series, first.guess)
 {
-    mean_pars 	     <- mean(series.work[!is.na(series.work)])    # mean of timeseries
-    series.work            <- (series.work - mean_pars)
+    mean.pars 	     <- mean(series.work[!is.na(series.work)])    # mean of timeseries
+    series.work            <- (series.work - mean.pars)
     if (z.trans.series) {
-        rescale_std          <- sd(as.vector(series.work), na.rm = TRUE)  # rescaling factor (=stdev(series))
-        series.work          <- (series.work) / rescale_std
+        rescale.std          <- sd(as.vector(series.work), na.rm = TRUE)  # rescaling factor (=stdev(series))
+        series.work          <- (series.work) / rescale.std
     } else {
-        rescale_std          <- 1
+        rescale.std          <- 1
     }
     series.untouched       <- series.work
     if (all(is.na(series.work)) & length(first.guess) > 0) {
-        mean_pars          <- mean(as.vector(first.guess), na.rm = TRUE)
-        rescale_std        <- sd(as.vector(first.guess), na.rm = TRUE)
+        mean.pars          <- mean(as.vector(first.guess), na.rm = TRUE)
+        rescale.std        <- sd(as.vector(first.guess), na.rm = TRUE)
     }
-    return(list(mean_pars = mean_pars, series.work = series.work, rescale_std = rescale_std
+    return(list(mean.pars = mean.pars, series.work = series.work, rescale.std = rescale.std
                 , series.untouched = series.untouched))
 }
 
@@ -767,16 +776,16 @@ gapfillSSA <- structure(function(
 
 .gapfillSSAInsertGaps <- function(amnt.artgaps, n.datapts, n.dims, size.biggap, series, seed
                                  , series.work, kind, ind.padded, series.untouched) {
-    n_biggaps        <- 0                                              # amount of big gaps (changed later if biggaps are to be included)
-    index_biggap     <- integer()                                      # index of positions in series where to include biggaps
-    n_smallgaps      <- 0                                              # amount of small gaps (changed later if smallgaps are to be included)
-    index_smallgaps  <- integer()                                      # index of positions in series where to include smallgaps
-    index_gaps       <- which(is.na(series.work))
+    n.biggaps        <- 0                                              # amount of big gaps (changed later if biggaps are to be included)
+    index.biggap     <- integer()                                      # index of positions in series where to include biggaps
+    n.smallgaps      <- 0                                              # amount of small gaps (changed later if smallgaps are to be included)
+    index.smallgaps  <- integer()                                      # index of positions in series where to include smallgaps
+    index.gaps       <- which(is.na(series.work))
     
     ## TODO think about big gaps for MSSA
     ## insert big gaps
     if (amnt.artgaps[1] > 0)  {
-        n_biggaps   <- max(c(floor(n.datapts * amnt.artgaps[1] / size.biggap^(n.dims)), 1))
+        n.biggaps   <- max(c(floor(n.datapts * amnt.artgaps[1] / size.biggap^(n.dims)), 1))
         if (kind == '2d-ssa')
         {
             mar.window      <- round(size.biggap * 0.2, digits=0)
@@ -786,13 +795,13 @@ gapfillSSA <- structure(function(
             w <-  size.biggap + 2 * mar.window + ifelse((size.biggap + 2 * mar.window)%%2, 0, -1)            
             movg.averg      <- t(array(focal(raster(series.dummy), w = w ,
                                                fun = function(x, ...){sum(!is.na(x))}, na.rm = FALSE)[], dim = dim(series.dummy)[2:1]))
-            ind.biggaps.cp  <- matrix(NA, ncol = 2, nrow = n_biggaps)
+            ind.biggaps.cp  <- matrix(NA, ncol = 2, nrow = n.biggaps)
         }
         series.dummy    <- series.work
         series.dummy[ind.padded] <- NA
         series.dummy[c(1:size.biggap, (length(series.work) - size.biggap) : length(series.work))] <- NA
         
-        for (l in 1:n_biggaps) {
+        for (l in 1:n.biggaps) {
             if (kind == '1d-ssa') {
                 if (length(seed)>0)
                   set.seed((seed*l)%%(2^31) + 1)
@@ -800,7 +809,7 @@ gapfillSSA <- structure(function(
                 rle.valid   <- (1:length(rle.ob$lengths))[rle.ob$values]
                 ind.biggest <- which(rle.ob$values)[which.is.max(rle.ob$lengths[rle.ob$values])]
                 ind.sequence<- 1 : (rle.ob$lengths[ind.biggest]) + sum(rle.ob$lengths[0 : (ind.biggest - 1)])
-                index_biggap_t <- 0 : (size.biggap - 1) + sample(rep(ind.sequence[ 1 : max(c(min(c(length(ind.sequence),
+                index.biggap.t <- 0 : (size.biggap - 1) + sample(rep(ind.sequence[ 1 : max(c(min(c(length(ind.sequence),
                             (length(ind.sequence) - size.biggap)  )),1 )) ], each = 2), 1)
             } else {
                 ind.highest          <- which(movg.averg == max(movg.averg, na.rm = TRUE), arr.ind = TRUE)
@@ -809,41 +818,41 @@ gapfillSSA <- structure(function(
                 ind.col.gap          <- seq(-1 * floor(size.biggap / 2), floor(size.biggap / 2)) + ind.biggaps.cp[l, 2]
                 movg.averg[ind.row.gap, ind.col.gap]  = 0
                 series.work[ind.row.gap, ind.col.gap] = NA
-                index_biggap_t       <- sort(rep(ind.row.gap, each = length(ind.col.gap)) +
+                index.biggap.t       <- sort(rep(ind.row.gap, each = length(ind.col.gap)) +
                                              rep((ind.col.gap-1), times = length(ind.row.gap)) * dim(series)[1])
             }
-            index_biggap   <- c(index_biggap, index_biggap_t)
-            series.dummy[index_biggap_t] <- NA
+            index.biggap   <- c(index.biggap, index.biggap.t)
+            series.dummy[index.biggap.t] <- NA
         }
-        index_biggap              <- sort(index_biggap)
-        gaps_in_biggap            <- sum(is.na(series.untouched[index_biggap]))
-        index_biggap              <- index_biggap[!is.na(series.untouched[index_biggap])]
-        series.work[index_biggap] <- NA
+        index.biggap              <- sort(index.biggap)
+        gaps.in.biggap            <- sum(is.na(series.untouched[index.biggap]))
+        index.biggap              <- index.biggap[!is.na(series.untouched[index.biggap])]
+        series.work[index.biggap] <- NA
     }
 
     ## insert artificial small gaps (if wanted)
     if (amnt.artgaps[2] > 0) {
         if (amnt.artgaps[1] > 0) {
-            n_smallgaps <- n_biggaps * size.biggap^(n.dims) * amnt.artgaps[1] / amnt.artgaps[2]
+            n.smallgaps <- n.biggaps * size.biggap^(n.dims) * amnt.artgaps[1] / amnt.artgaps[2]
         } else {
-            n_smallgaps <- n.datapts * amnt.artgaps[2]
+            n.smallgaps <- n.datapts * amnt.artgaps[2]
         }
         if (length(seed) > 0)
            set.seed((seed)%%(2^31) + 1)        
-        index_values_dummy     <- which(!is.na(series.work))
-        index_smallgaps        <- sort(index_values_dummy[floor(runif(n_smallgaps, min = 1, max = length(index_values_dummy) ))])
-        series.work[index_smallgaps] <- NA
+        index.values.dummy     <- which(!is.na(series.work))
+        index.smallgaps        <- sort(index.values.dummy[floor(runif(n.smallgaps, min = 1, max = length(index.values.dummy) ))])
+        series.work[index.smallgaps] <- NA
     }
 
     ## Combine both types of gaps
-    index_artgaps  <- sort(c(index_smallgaps, index_biggap))       # index of all atrifical gaps
-    index_allgaps  <- sort(c(index_artgaps, index_gaps))           # index of artificial and "natural" gaps
-    return(list(index_biggap = index_biggap, index_artgaps = index_artgaps, index_allgaps = index_allgaps,
-           index_smallgaps = index_smallgaps, series.work = series.work, index_gaps = index_gaps))
+    index.artgaps  <- sort(c(index.smallgaps, index.biggap))       # index of all atrifical gaps
+    index.allgaps  <- sort(c(index.artgaps, index.gaps))           # index of artificial and "natural" gaps
+    return(list(index.biggap = index.biggap, index.artgaps = index.artgaps, index.allgaps = index.allgaps,
+           index.smallgaps = index.smallgaps, series.work = series.work, index.gaps = index.gaps))
 }
 
 #################################        plot cross validation performance   ###########################################
-.gapfillSSAPlot <- function(open.plot, results, amnt.iters, iter.chosen, i_best, MeasPerf) {
+.gapfillSSAPlot <- function(open.plot, results, amnt.iters, iter.chosen, i.best, MeasPerf) {
     if (open.plot) {
         layout(matrix(1:5, ncol = 5), widths = c(1, 1, 1, 0.1, 0.1))
         par(mar = c(0, 0, 0, 0.2), oma = c(3, 3, 2, 0.2), tcl = 0.2, mgp = c(0, 0, 100), las = 1)
@@ -863,7 +872,7 @@ gapfillSSA <- structure(function(
         } else if (i == 2) {
             mtext('outer iteration', side = 1, line = 1.5)
         }
-        points(iter.chosen[1], i_best[iter.chosen[1]], col = 'red', pch = 16)
+        points(iter.chosen[1], i.best[iter.chosen[1]], col = 'red', pch = 16)
     }
     legend(x = 'topright', legend = 'iter. chosen', pch = 16, col = 'red', bty = 'n')
 
@@ -880,14 +889,13 @@ gapfillSSA <- structure(function(
 
 .calcSSAAllMethods <- function(
   ##title<< iterate through all SSA methods
-  series.in, M, n.comp, kind, GroupEigTrpls = 'clusterify', iterindex = 0,
-  SSA.methods = c('nutrlan', 'propack', 'eigen', 'svd'), run.grouping = TRUE,
+  series.in, M, n.comp, kind, GroupEigTrpls = 'grouping.auto', groupingMethod = 'wcor',
+  iterindex = 0, SSA.methods = c('nutrlan', 'propack', 'eigen', 'svd'), run.grouping = TRUE,
   ssa.groups.t = list(), seed = c(), debugging = FALSE)
   ##description<< Helper function around ssa and reconstruct that iterates through all available
   ##              ssa methods in case the selected ones do not converge.
   ##seealso<<
   ##\code{\link{ssa}}, \code{\link{gapfillSSA}}, \code{\link{filterTseriesSSA}}
-
 {
   ## preparation
   if (debugging)
@@ -914,7 +922,7 @@ gapfillSSA <- structure(function(
       if (run.grouping) {                                                             ## if group eigentriples
         if (length(which(ssa.res$sigma > 0)) > 2) {                                  ## if enough eigentriples
           ssa.groups.t   <- try({
-            do.call(GroupEigTrpls, list(x = ssa.res, group = which(ssa.res$sigma[1:n.comp] > 0)))
+            do.call(GroupEigTrpls, list(x = ssa.res, groups = which(ssa.res$sigma[1:n.comp] > 0), grouping.method = groupingMethod))
           }, silent = TRUE)
           if (class(ssa.groups.t)[1] == 'try-error')                                  ## if grouping failed
             group.triples <- 'single' 
@@ -924,6 +932,7 @@ gapfillSSA <- structure(function(
         ssa.groups.local <- ssa.groups.t
       } else if (!(run.grouping)) {                                                   ## if do not group eigentriples
         ssa.groups.local <- try({sapply(ssa.groups.t, function(x)x[!is.element(x, which(ssa.res$sigma == 0)) & x <= length(ssa.res$sigma)], simplify = F)}, silent = TRUE)
+        ssa.groups.local <- ssa.groups.local[sapply(ssa.groups.local, function(x) length(x))!= 0]
       }
       options(old.opt)
       if (group.triples == 'single') {                                                ## if grouping failed
@@ -933,7 +942,7 @@ gapfillSSA <- structure(function(
           if (debugging) {
             session.stuff <- sessionInfo()
             save(session.stuff, args.function, g, seed, call.args,
-                file = paste('grouping_error_', as.numeric(Sys.time()),'.RData', sep = ''))
+                file = paste('grouping_error_', as.numeric(Sys.time()), '_', sample(1:1000000, 1), '.RData', sep = ''))
           }          
         }
         ssa.groups.t     <- as.list(1:n.comp)[which(ssa.res$sigma != 0)]
@@ -950,7 +959,7 @@ gapfillSSA <- structure(function(
       if (debugging) {
         str.time <- gsub('[[:space:]]', '-', gsub('[[:punct:]]', '-', as.character(Sys.time())))
         path.debug <- file.path('/Net', 'Groups', 'BGI', 'tmp', 'jbuttlar', 
-                                'Cluster_jobs_debugging', sub('/Net/Groups/BGI/', '', getwd()))
+                                'Cluster_jobs_debugging',  getwd())
         file.name.debug  <- paste(path.debug, '/debug_convergence_', str.time, sep = '')            
         dump.frames(dumpto = file.name.debug, to.file = TRUE)
         printStatus(paste('Saved debugging workspace to file ', file.name.debug, '.rda', sep = ''))
@@ -974,8 +983,8 @@ gapfillSSA <- structure(function(
 
 .getBestIteration <- function(
 ##title << default way to determine best SSA fit. 
-    perf.matrix ##<< performance matrix (should be one of recstr_perf_a, recstr_perf_b or
-                ##   recstr_perf_s).
+    perf.matrix ##<< performance matrix (should be one of recstr.perf.a, recstr.perf.b or
+                ##   recstr.perf.s).
 )
   ##description<<
   ## This is the standard function that determines the best fit for the SSA gapfilling
@@ -1002,16 +1011,16 @@ gapfillSSA <- structure(function(
       min(x, na.rm = TRUE)
     }
   }  
-  i_best     <- apply(perf.matrix, 1, .fun.frst.nnan)
-  h_rows_min <- apply(perf.matrix, 1, .fun.getmin)
-  if (length(h_rows_min)[1] > 1) {
-    h_best     <- min(which(  h_rows_min <= min(h_rows_min, na.rm = TRUE) +
-                            0.1 * (max(h_rows_min, na.rm = TRUE) - min(h_rows_min, na.rm = TRUE))   ))
+  i.best     <- apply(perf.matrix, 1, .fun.frst.nnan)
+  h.rows.min <- apply(perf.matrix, 1, .fun.getmin)
+  if (length(h.rows.min)[1] > 1) {
+    h.best     <- min(which(  h.rows.min <= min(h.rows.min, na.rm = TRUE) +
+                            0.1 * (max(h.rows.min, na.rm = TRUE) - min(h.rows.min, na.rm = TRUE))   ))
   } else {
-    h_best    <- 1
+    h.best    <- 1
   }
-  ##value<< list with best outer (h_best) and inner (i_best) iteration.
-  best.iter <- list(h_best = h_best, i_best = i_best)
+  ##value<< list with best outer (h.best) and inner (i.best) iteration.
+  best.iter <- list(h.best = h.best, i.best = i.best)
   return(best.iter)
 }
 

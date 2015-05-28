@@ -8,7 +8,8 @@ be used to compute the frequency, variance and period of all SSA eigentriples.}
     plot.fourier = TRUE, series.orig = c(), pch = 16, col = "red", 
     show.harmonies = TRUE, label.points = TRUE, label.tresh = 5e-04, 
     call.freq = quote(DetermineFreq(series.t)), print.stat = TRUE, 
-    ...)}\arguments{
+    ...)}
+\arguments{
   \item{ssa.object}{SSA object: the results of a run of ssa().}
   \item{calc.raw.SSA}{logical: Whether to additionally compute the whole spectrum for
 all un-grouped eigentriples (my slow the process in case of
