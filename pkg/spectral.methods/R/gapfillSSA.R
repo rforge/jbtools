@@ -923,7 +923,7 @@ gapfillSSA <- structure(function(
         if (length(which(ssa.res$sigma > 0)) > 2) {                                  ## if enough eigentriples
           ssa.groups.t   <- try({
             do.call(GroupEigTrpls, list(x = ssa.res, groups = which(ssa.res$sigma[1:n.comp] > 0), grouping.method = groupingMethod))
-          }, silent = TRUE)
+        }, silent = TRUE)
           if (class(ssa.groups.t)[1] == 'try-error')                                  ## if grouping failed
             group.triples <- 'single' 
         } else if (!(length(which(ssa.res$sigma > 0)) > 2)) {                        ## if not enough eigentriples

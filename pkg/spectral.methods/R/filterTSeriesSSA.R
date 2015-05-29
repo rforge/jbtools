@@ -21,9 +21,9 @@ series                      ##<< numeric vector: Input time series (no gaps!)
                             ## treated as "noise" and will not be included in the groups. The actual
                             ## threshold is calculated by multiplying the total variance of
                             ## the time series with this fraction.
-, grouping = c('grouping.auto', 'nearest.neigh')[1]##<< character string: Method to use for grouping
+, grouping = c('grouping.auto', 'groupSSANearestNeighbour')[1]##<< character string: Method to use for grouping
                             ##  the individual SSA eigentriples. 'grouping.auto' uses the function
-                            ## of that name in package Rssa, 'nearest.neigh' employs a rather crude scheme
+                            ## of that name in package Rssa, 'groupSSANearestNeighbour' employs a rather crude scheme
                             ## based on finding pairs (or larger groups) in an euclidian
                             ## distance matrix of the reconstructions of all extracted SSA eigentriples.
                             ## See ?grouping.auto or ?groupSSANearestNeighbour for details.
@@ -75,12 +75,12 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 ##description<<
 ## This function decomposes (or filters) a time series into a set of orthogonal (i.e. additive)
 ## components with variance on different and distinct timescales (i.e. within different bands).
-## It uses the fast and optimized  Singular Spectrum Analysis (SSA) method of Korobeneykov (2013).
+## It uses the fast and optimized  Singular Spectrum Analysis (SSA) method of Korobeynikov (2010).
 
 ##details<<
 ## Purpose
-## The function is based on "singular spectrum analysis" (SSA) (Golyandina et al. [2001])
-## based on the Rssa package (Korobeynikov (2013)).
+## The function is based on "singular spectrum analysis" (SSA) (Golyandina et al. (2001))
+## based on the Rssa package (Korobeynikov (2010), see Golyandina et al. (2013) for a basic introduction).
 ##
 ## Definition of the period borders (borders.wl):
 ## borders.wl contains the borders of the different periodicity bands to
@@ -152,10 +152,13 @@ series                      ##<< numeric vector: Input time series (no gaps!)
 ## the background represent a Fourier Spectrum of the original series.
 
 ##references<<
+## Golyandina, N.; Nekrutkin, V.; Nekrutkin, V. & Zhigljavsky, A. (2001),
+## Analysis of time series structure: SSA and related techniques, CRC Press    
+## Korobeynikov, A. (2010), Computation- and space-efficient implementation of SSA.
+## Statistics and Its Interface, Vol. 3, No. 3, Pp. 257-268
 ## Golyandina, N. & Korobeynikov, A. (2013), 'Basic Singular Spectrum Analysis
 ## and forecasting with R', Computational Statistics & Data Analysis.
-## Golyandina, N.; Nekrutkin, V.; Nekrutkin, V. & Zhigljavsky, A. (2001),
-## Analysis of time series structure: SSA and related techniques, CRC Press
+
                               
 ##keyword<<
 ## SSA, time series, spectral analysis, singular spectrum analysis, spectral decomposition, filter

@@ -3,15 +3,14 @@
 \title{Decompose a vector (i.e. time series) into spectral bands}
 \description{This function decomposes (or filters) a time series into a set of orthogonal (i.e. additive)
 components with variance on different and distinct timescales (i.e. within different bands).
-It uses the fast and optimized  Singular Spectrum Analysis (SSA) method of Korobeneykov (2013).}
+It uses the fast and optimized  Singular Spectrum Analysis (SSA) method of Korobeynikov (2010).}
 \usage{filterTSeriesSSA(series, borders.wl, M = rep(floor(length(series)/3), 
     times = n.steps), n.comp = rep(40, times = n.steps), harmonics = rep(0, 
     times = n.steps), tolerance.harmonics = 0.05, var.thresh.ratio = 0.005, 
-    grouping = c("grouping.auto", "nearest.neigh")[1], groupingMethod = "wcor", 
-    repeat.extr = rep(1, times = length(borders.wl)), recstr.type = "subtraction", 
-    pad.series = c(0, 0), SSA.methods = c("nutrlan", "propack", 
-        "eigen", "svd"), center.series = TRUE,
-    call.freq = quote(calcFrequency(series.t)), 
+    grouping = c("grouping.auto", "groupSSANearestNeighbour")[1], 
+    groupingMethod = "wcor", repeat.extr = rep(1, times = length(borders.wl)), 
+    recstr.type = "subtraction", pad.series = c(0, 0), SSA.methods = c("nutrlan", 
+        "propack", "eigen", "svd"), center.series = TRUE, call.freq = quote(calcFrequency(series.t)), 
     n.steps = switch(class(borders.wl), list = length(borders.wl), 
         dim(borders.wl)[2]), plot.spectra = FALSE, second.axis = TRUE, 
     open.plot = TRUE, print.stat = TRUE, xlim = c(), debugging = FALSE, 
@@ -40,7 +39,7 @@ threshold is calculated by multiplying the total variance of
 the time series with this fraction.}
   \item{grouping}{character string: Method to use for grouping
 the individual SSA eigentriples. 'grouping.auto' uses the function
-of that name in package Rssa, 'nearest.neigh' employs a rather crude scheme
+of that name in package Rssa, 'groupSSANearestNeighbour' employs a rather crude scheme
 based on finding pairs (or larger groups) in an euclidian
 distance matrix of the reconstructions of all extracted SSA eigentriples.
 See ?grouping.auto or ?groupSSANearestNeighbour for details.}
@@ -89,8 +88,8 @@ a possible error in the settings, data or code.}
   \item{\dots}{miscellaneous: further arguments passed to the plotting routines.}
 }
 \details{Purpose
-The function is based on "singular spectrum analysis" (SSA) (Golyandina et al. [2001])
-based on the Rssa package (Korobeynikov (2013)).
+The function is based on "singular spectrum analysis" (SSA) (Golyandina et al. (2001))
+based on the Rssa package (Korobeynikov (2010), see Golyandina et al. (2013) for a basic introduction).
 
 Definition of the period borders (borders.wl):
 borders.wl contains the borders of the different periodicity bands to
@@ -169,10 +168,12 @@ defined. }
 (second column) period borders of each filtered component.
 The rows here correspond to the rows in "dec.series".}
 \item{settings}{list: Settings used to perform the calculation.}}
-\references{Golyandina, N. & Korobeynikov, A. (2013), 'Basic Singular Spectrum Analysis
-and forecasting with R', Computational Statistics & Data Analysis.
-Golyandina, N.; Nekrutkin, V.; Nekrutkin, V. & Zhigljavsky, A. (2001),
-Analysis of time series structure: SSA and related techniques, CRC Press}
+\references{Golyandina, N.; Nekrutkin, V.; Nekrutkin, V. & Zhigljavsky, A. (2001),
+Analysis of time series structure: SSA and related techniques, CRC Press    
+Korobeynikov, A. (2010), Computation- and space-efficient implementation of SSA.
+Statistics and Its Interface, Vol. 3, No. 3, Pp. 257-268
+Golyandina, N. & Korobeynikov, A. (2013), 'Basic Singular Spectrum Analysis
+and forecasting with R', Computational Statistics & Data Analysis.}
 \author{Jannis v. Buttlar}
 
 
