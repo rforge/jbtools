@@ -2,7 +2,8 @@
 \alias{isSeriesConstant}
 \title{Check whether a vector is constant}
 \description{isSeriesConstant checks whether a series is constant (up to a certain degree).}
-\usage{isSeriesConstant(x, tresh.const = 1e-12, ratio.const = 0.05)}\arguments{
+\usage{isSeriesConstant(x, tresh.const = 1e-12, ratio.const = 0.05)}
+\arguments{
   \item{x}{numeric vector: series to test.}
   \item{tresh.const}{numeric: maximum deviation allowed which is still
 considered to be constant.}

@@ -3,7 +3,8 @@
 \title{Transfer relative to actual plot coordinate values}
 \description{userCoords transfers realtive coordinate values (i.e. values between
 0 and 1) to the actual coordinate system of the plot.}
-\usage{userCoords(x = c(), y = c())}\arguments{
+\usage{userCoords(x = c(), y = c())}
+\arguments{
   \item{x}{numeric vector(0-1): relative coordinates on the x axis}
   \item{y}{numeric vector(0-1): relative coordinates on the y axis}
 }

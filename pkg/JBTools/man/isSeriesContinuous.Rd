@@ -3,7 +3,8 @@
 \title{Test for continuous (non NA interrupted) series}
 \description{isSeriesContinuous test whether a vector contains one non interrupted sequence
 of values (i.e. no NaN in between). }
-\usage{isSeriesContinuous(x)}\arguments{
+\usage{isSeriesContinuous(x)}
+\arguments{
   \item{x}{numeric vector: series to test}
 }
 \details{The function returns TRUE when the vector contains one (and only one)

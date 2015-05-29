@@ -39,17 +39,17 @@ plotColorScale <- function(
  if (sum(outer.range) > 0) {
    pos.outer = pos
    if (gradient == 'y') {
-     pos.outer$y <- pos.outer$y + 0.05 * outer.range * c(-1, 1)
+     coords$y <- pos.outer$y - 0.05 * outer.range * c(-1, 1)
    } else {
-     pos.outer$x <- pos.outer$x + 0.05 * outer.range * c(-1, 1)
+     coords$x <- pos.outer$x - 0.05 * outer.range * c(-1, 1)
    }
-   legend <- paste(c('<', '>'), zlim)
-   legend[!outer.range] <- '  '
+   legend.ext <- paste(c('<', '>'), zlim)
+   legend.ext[!outer.range] <- '  '
    coords.outer <-       userCoords(pos.outer$x, pos.outer$y)
 
    color.legend(coords.outer$x[1],coords.outer$y[1],coords.outer$x[2],coords.outer$y[2],
-                rect.col= rep(colorChangeDarkness(col[c(1, length(col))], c(1.5, 0.5)), each = 10),
-                legend = legend, gradient = gradient, align = align, cex = cex)
+                rect.col= rep(colorChangeDarkness(col[c(1, length(col))], c(0.5, 0.5)), each = 10),
+                legend = legend.ext, gradient = gradient, align = align, cex = cex)
  }
   if (length(zlim) == 0 & length(legend) == 0) {
     legend = ' '

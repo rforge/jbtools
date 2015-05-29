@@ -1,12 +1,12 @@
 Package: ncdf.tools
-Title: Easier NetCDF File Handling 
-Version: 0.7.1.294
+Title: Easier 'NetCDF' File Handling 
+Version: 0.7.1.295
 Date: 2015-05-20
 Author: Jannis v. Buttlar
 Maintainer: Jannis v. Buttlar <jbuttlar@bgc-jena.mpg.de>
 Imports: RNetCDF, chron, parallel, abind, plotrix, raster, RColorBrewer, JBTools
-Description: Set of tools to simplify the handling of ncdf files with the RNetCDF package. 
- Most functions are wrappers for basic functions from RNetCDF to easily run combinations of these 
+Description: Set of tools to simplify the handling of 'NetCDF' files with the 'RNetCDF' package. 
+ Most functions are wrappers of basic functions from the 'RNetCDF' package to easily run combinations of these 
  functions for frequently encountered tasks. 
 License: GPL-2
 LazyLoad: yesf

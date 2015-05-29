@@ -6,7 +6,8 @@ a rotated version of the matrix,  i.e. it plots the matrix as it
 printed on the screen.         }
 \usage{plotImageRotated(data, col.vals = c(), row.vals = c(), scale = TRUE, 
     col = heat.colors(20), zlim = range(data, na.rm = TRUE), 
-    title = "", useRaster = TRUE, xlab = "", ylab = "", ...)}\arguments{
+    title = "", useRaster = TRUE, xlab = "", ylab = "", ...)}
+\arguments{
   \item{data}{matrix: data to be plotted}
   \item{col.vals}{numeric vector: coordinate values for the columns of data}
   \item{row.vals}{numeric vector: coordinate values for the rows of data}

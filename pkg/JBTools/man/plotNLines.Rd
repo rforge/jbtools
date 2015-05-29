@@ -8,7 +8,8 @@
     scale = 1, plot.scale = TRUE, function.add = function() (1), 
     bgc = "white", pch.axlink = 1, type = "l", colors = c(), 
     xlim = c(), ylim = c(), xlab = c(), ylab = c(), labels = c(), 
-    lty = 1, title, yaxt = "s", ...)}\arguments{
+    lty = 1, title, yaxt = "s", ...)}
+\arguments{
   \item{x.data}{
 }
   \item{y.data}{numeric matrix/data frame: y-values with one series of
